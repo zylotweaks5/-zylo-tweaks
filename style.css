@@ -118,6 +118,12 @@ code {
 }
 .btn-secondary:hover { border-color: var(--accent-dim); }
 
+.btn-solid {
+  background: #f2f1ed;
+  color: #14100a;
+}
+.btn-solid:hover { background: #ffffff; }
+
 .btn-ghost {
   background: transparent;
   color: var(--text);
@@ -252,6 +258,23 @@ code {
   mask-image: radial-gradient(ellipse 60% 50% at 50% 20%, black 40%, transparent 100%);
 }
 
+.hero-burst {
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(900px, 140vw);
+  height: 520px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  background:
+    linear-gradient(115deg, transparent 42%, var(--accent-soft) 43%, var(--accent-soft) 45%, transparent 46%),
+    linear-gradient(115deg, transparent 48%, var(--accent-soft) 49%, var(--accent-soft) 50%, transparent 51%),
+    linear-gradient(115deg, transparent 54%, var(--accent-soft) 55%, var(--accent-soft) 57%, transparent 58%);
+  mask-image: radial-gradient(ellipse 55% 60% at 50% 25%, black 30%, transparent 80%);
+}
+
 .hero::before {
   content: "";
   position: absolute;
@@ -279,8 +302,9 @@ code {
 }
 
 .hero-title {
+  font-family: 'Sora', var(--font-display);
   font-size: clamp(3.2rem, 9vw, 6rem);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.02;
   display: flex;
