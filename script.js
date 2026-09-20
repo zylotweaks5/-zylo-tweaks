@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
       hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
 
-    // Close the menu after tapping a link (mobile)
     navLinks.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
         navLinks.classList.remove('open');
@@ -34,16 +33,44 @@ document.addEventListener('DOMContentLoaded', function () {
     question.addEventListener('click', function () {
       var isOpen = item.classList.contains('open');
 
-      // Close any other open FAQ item
       faqItems.forEach(function (other) {
         other.classList.remove('open');
       });
 
-      // Toggle this one
       if (!isOpen) {
         item.classList.add('open');
       }
     });
+  });
+
+  // ---- Diagnostic scan panel: count-up animation ----
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var scanValues = document.querySelectorAll('.scan-value');
+
+  scanValues.forEach(function (el) {
+    var target = parseInt(el.getAttribute('data-count-to'), 10) || 0;
+    var suffix = el.getAttribute('data-suffix') || '';
+
+    if (prefersReducedMotion) {
+      el.textContent = target + suffix;
+      return;
+    }
+
+    var duration = 1100;
+    var startTime = null;
+
+    function step(timestamp) {
+      if (startTime === null) startTime = timestamp;
+      var progress = Math.min((timestamp - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = Math.round(eased * target);
+      el.textContent = current + suffix;
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    }
+
+    window.requestAnimationFrame(step);
   });
 
 });
