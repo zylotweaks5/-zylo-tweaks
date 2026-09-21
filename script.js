@@ -73,4 +73,33 @@ document.addEventListener('DOMContentLoaded', function () {
     window.requestAnimationFrame(step);
   });
 
+  // ---- Demo performance bars: animate fill on scroll into view ----
+  var perfBars = document.querySelectorAll('.perf-bar-fill, .perf-ba-after');
+
+  if (perfBars.length) {
+    var fillBar = function (el) {
+      var pct = el.getAttribute('data-fill');
+      if (pct !== null) {
+        el.style.width = pct + '%';
+      }
+    };
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      perfBars.forEach(fillBar);
+    } else {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            fillBar(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      perfBars.forEach(function (el) {
+        observer.observe(el);
+      });
+    }
+  }
+
 });

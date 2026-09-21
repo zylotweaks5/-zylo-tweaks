@@ -380,8 +380,29 @@ code {
 }
 
 /* =========================================================
-   TESTED PERFORMANCE (template)
+   DEMO PERFORMANCE
    ========================================================= */
+
+.demo-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.demo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
 
 .perf-grid {
   display: grid;
@@ -393,7 +414,7 @@ code {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 26px;
 }
 
 .perf-head {
@@ -406,50 +427,108 @@ code {
 .perf-game {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
 }
 
 .perf-badge {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 5px 12px;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  padding: 4px 9px;
   border-radius: 999px;
 }
 
-.perf-rows {
+.perf-percent {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.perf-percent span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-left: 4px;
+}
+
+.perf-bar-track {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.perf-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  border-radius: 999px;
+  transition: width 1.1s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.perf-ba {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.perf-ba-col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.perf-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: var(--text-dim);
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.perf-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-.perf-val {
+.perf-ba-label {
   font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--accent);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
 }
 
-.perf-dim .perf-val { color: var(--text-faint); }
+.perf-ba-track {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.perf-ba-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.perf-ba-before {
+  width: 62%;
+  background: var(--text-faint);
+}
+
+.perf-ba-after {
+  width: 0%;
+  background: var(--accent);
+  transition: width 1.1s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.perf-note {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
 
 .perf-caption {
   font-size: 0.82rem;
   color: var(--text-faint);
-  margin-top: 24px;
-  border-top: 1px solid var(--border);
+  margin-top: 28px;
   padding-top: 18px;
+  border-top: 1px solid var(--border);
 }
 
 /* =========================================================
