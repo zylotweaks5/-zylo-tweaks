@@ -1054,7 +1054,42 @@ code {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow-y: auto;
-  padding: 36px;
+  padding: 0 0 36px;
+}
+
+.tweak-modal-cover {
+  position: relative;
+  height: 130px;
+  background: linear-gradient(160deg, var(--surface-2), var(--bg));
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+  overflow: hidden;
+}
+
+.tweak-modal-cover-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--text);
+  margin-left: 8px;
+  margin-top: 10px;
+}
+
+.tweak-modal-panel > .tweak-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  float: none;
+  margin: 0;
+}
+
+.tweak-modal-body {
+  padding: 30px 36px 0;
 }
 
 .tweak-modal-close {
@@ -1078,21 +1113,15 @@ code {
 }
 
 .tweak-modal-body h2 {
-  font-size: 1.5rem;
-  margin-bottom: 6px;
-  padding-right: 46px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
 }
 
 .tweak-modal-body .tweak-modal-tag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 4px 9px;
-  border-radius: 4px;
-  margin-bottom: 14px;
+  display: none;
 }
 
 .tweak-modal-body p {
@@ -1162,7 +1191,10 @@ code {
 }
 
 @media (max-width: 520px) {
-  .tweak-modal-panel { padding: 26px 20px; margin: 16px auto; max-height: calc(100vh - 32px); }
+  .tweak-modal-panel { padding: 0 0 26px; margin: 16px auto; max-height: calc(100vh - 32px); }
+  .tweak-modal-body { padding: 22px 20px 0; }
+  .tweak-modal-cover { height: 100px; }
+  .tweak-modal-cover-title { font-size: 1.15rem; }
 }
 
 /* =========================================================
