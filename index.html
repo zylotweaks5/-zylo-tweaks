@@ -61,9 +61,8 @@
         </p>
 
         <div class="hero-actions">
-          <a href="#tweaks" class="btn btn-primary">Explore tweaks</a>
-          <a href="#downloads" class="btn btn-secondary">Download</a>
-          <a href="https://discord.gg/zAaH8uxAG" class="btn btn-text" target="_blank" rel="noopener">Join Discord →</a>
+          <a href="#tweaks" class="btn btn-primary">Explore services</a>
+          <a href="https://discord.gg/zAaH8uxAG" class="btn btn-secondary" target="_blank" rel="noopener">Try for free</a>
         </div>
 
         <ul class="trust-bar">
@@ -118,7 +117,7 @@
           <h3>Potato / Low-End Preset</h3>
           <p>For anyone stuck on integrated graphics or an older CPU — trims the stuff that's dragging your FPS down.</p>
           <p class="tweak-meta">For: 4–8GB RAM · integrated graphics</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="low-end">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -126,7 +125,7 @@
           <h3>AMD Optimization</h3>
           <p>A few driver and power settings that tend to matter more if you're running Ryzen + Radeon.</p>
           <p class="tweak-meta">For: Ryzen CPUs · Radeon GPUs</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="amd">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -134,7 +133,7 @@
           <h3>Intel Optimization</h3>
           <p>Intel CPUs handle power and threads a bit differently — this is tuned around that.</p>
           <p class="tweak-meta">For: Intel Core CPUs</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="intel">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -142,7 +141,7 @@
           <h3>Game Processor</h3>
           <p>Making sure Fortnite actually gets first dibs on your CPU instead of fighting background apps for it.</p>
           <p class="tweak-meta">For: All hardware tiers</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="game-processor">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -150,7 +149,7 @@
           <h3>Game User Settings</h3>
           <p>A settings baseline if you'd rather have steady frames than a pretty screenshot.</p>
           <p class="tweak-meta">For: All hardware tiers</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="game-settings">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -158,7 +157,7 @@
           <h3>Stretched Resolution</h3>
           <p>If you want that classic stretched look — here's how to set it up without messing up your scaling.</p>
           <p class="tweak-meta">For: 4:3 &amp; custom aspect setups</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="stretched-res">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -166,7 +165,7 @@
           <h3>Network Optimization</h3>
           <p>Cuts down on background network noise so your ping has less to compete with.</p>
           <p class="tweak-meta">For: All connections</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="network">View tweak →</button>
         </article>
 
         <article class="tweak-card">
@@ -174,7 +173,7 @@
           <h3>PC Checks</h3>
           <p>Run this first — it's just a quick look at what's eating your resources before you touch anything else.</p>
           <p class="tweak-meta">For: All hardware tiers</p>
-          <a href="#" class="card-link">View tweak →</a>
+          <button class="card-link" data-open-tweak="pc-checks">View tweak →</button>
         </article>
 
       </div>
@@ -618,6 +617,17 @@
   </div>
   <div class="footer-bottom">© 2026 ZYLO TWEAKS</div>
 </footer>
+
+<!-- ===== TWEAK GUIDE MODAL ===== -->
+<div class="tweak-modal" id="tweak-modal" aria-hidden="true">
+  <div class="tweak-modal-backdrop" data-close-modal></div>
+  <div class="tweak-modal-panel" role="dialog" aria-modal="true" aria-labelledby="tweak-modal-title">
+    <button class="tweak-modal-close" data-close-modal aria-label="Close">✕</button>
+    <div class="tweak-modal-body" id="tweak-modal-body">
+      <!-- filled by script.js -->
+    </div>
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
