@@ -245,6 +245,126 @@ document.addEventListener('DOMContentLoaded', function () {
           <li>Settings → Windows Update → install pending updates, especially graphics drivers</li>
         </ul>
       `
+    },
+    'basic': {
+      tag: 'BUNDLE',
+      title: 'Basic Tweaks',
+      html: `
+        <p>The starting bundle — quick wins that take about 10 minutes total, safe for any hardware.</p>
+        <h3>What's included</h3>
+        <ul>
+          <li><strong>PC Checks</strong> — trim startup apps, free up storage, update drivers</li>
+          <li><strong>Game User Settings baseline</strong> — VSync off, motion blur off, frame rate capped to your monitor</li>
+          <li><strong>Game Mode</strong> — Settings → Gaming → Game Mode → On</li>
+        </ul>
+        <p>This is the same content as the standalone PC Checks and Game User Settings guides, bundled together as one pass for anyone just getting started.</p>
+        <p class="tweak-modal-note">Results vary by hardware — this reduces overhead, it doesn't guarantee a specific FPS number.</p>
+      `
+    },
+    'pro': {
+      tag: 'BUNDLE',
+      title: 'Pro Tweaks',
+      html: `
+        <p>Everything in Basic Tweaks, plus the settings that matter once you're past the easy wins.</p>
+        <h3>Adds on top of Basic</h3>
+        <ul>
+          <li><strong>Game Processor priority</strong> — set Fortnite to High priority each session via Task Manager</li>
+          <li><strong>Network Optimization</strong> — wired connection, adapter power management, background app closure</li>
+          <li><strong>Full in-game video settings pass</strong> — Shadows/Effects/Post Processing to Low, Textures to Low or Medium depending on your GPU memory</li>
+          <li><strong>GPU driver check</strong> — Nvidia/AMD/Intel, whichever applies to you (see the matching hardware guide)</li>
+        </ul>
+        <p class="tweak-modal-note">Results vary by hardware — this reduces overhead, it doesn't guarantee a specific FPS number.</p>
+      `
+    },
+    'extreme': {
+      tag: 'BUNDLE',
+      title: 'Extreme Tweaks',
+      html: `
+        <p>Everything in Pro Tweaks, pushed further — for people who want every bit of overhead gone, even at the cost of visuals.</p>
+        <h3>Adds on top of Pro</h3>
+        <ul>
+          <li><strong>All video settings to lowest</strong> — Resolution Scale down to 85–90% if needed, View Distance to Medium, all quality sliders to minimum</li>
+          <li><strong>Power plan</strong> — High Performance / Best Performance, not just Balanced</li>
+          <li><strong>Background recording off</strong> — Xbox Game Bar captures disabled entirely</li>
+          <li><strong>CPU affinity (6+ core CPUs)</strong> — reserve 1–2 cores for background Windows processes</li>
+          <li><strong>DNS switch</strong> — Cloudflare (1.1.1.1) or Google (8.8.8.8) for faster lookups</li>
+        </ul>
+        <p>This is the most aggressive combination on the site — expect a noticeably plainer-looking game in exchange for less overhead.</p>
+        <p class="tweak-modal-note">Results vary by hardware — this reduces overhead, it doesn't guarantee a specific FPS number.</p>
+      `
+    },
+    'full-optimization': {
+      tag: 'BUNDLE',
+      title: 'Full Optimization',
+      html: `
+        <p>Every guide on this site, done in one sitting, in the order that makes sense: Checks → hardware-specific pack → in-game settings → network → priority.</p>
+        <h3>The full order</h3>
+        <ol>
+          <li>PC Checks (always first)</li>
+          <li>Your hardware pack — AMD, Intel, or Nvidia, whichever applies</li>
+          <li>Game User Settings baseline</li>
+          <li>Network Optimization</li>
+          <li>Game Processor priority</li>
+          <li>Optional: Stretched Resolution, if that's a look you want</li>
+        </ol>
+        <p>Budget about 30–40 minutes to go through everything properly the first time. After that, most of it is a one-time setup.</p>
+        <p class="tweak-modal-note">Results vary by hardware — this reduces overhead, it doesn't guarantee a specific FPS number.</p>
+      `
+    },
+    'nvidia': {
+      tag: 'NVIDIA',
+      title: 'Nvidia Pack',
+      html: `
+        <p>For GeForce GPUs — the Nvidia equivalent of the AMD/Intel packs.</p>
+        <h3>Nvidia Control Panel</h3>
+        <p>Right-click desktop → NVIDIA Control Panel → Manage 3D Settings → Program Settings → add Fortnite, then set:</p>
+        <table>
+          <tr><th>Setting</th><th>Change to</th></tr>
+          <tr><td>Low Latency Mode</td><td>Ultra</td></tr>
+          <tr><td>Power Management Mode</td><td>Prefer Maximum Performance</td></tr>
+          <tr><td>Vertical Sync</td><td>Off</td></tr>
+          <tr><td>Texture Filtering — Quality</td><td>Performance</td></tr>
+          <tr><td>Shader Cache Size</td><td>Unlimited</td></tr>
+        </table>
+        <h3>Other steps</h3>
+        <ul>
+          <li>GeForce Experience → Drivers tab → check for updates</li>
+          <li>Windows power plan → Best Performance while gaming</li>
+        </ul>
+        <p class="tweak-modal-note">Results vary by hardware — this reduces overhead, it doesn't guarantee a specific FPS number.</p>
+      `
+    },
+    'zero-delay': {
+      tag: 'LATENCY',
+      title: '0 Delay — No FPS Drop',
+      html: `
+        <p>Combines the Network and Game Processor guides specifically to chase input delay, without touching visual quality (so your FPS floor doesn't drop from this alone).</p>
+        <h3>Steps</h3>
+        <ul>
+          <li><strong>Wired connection</strong> — biggest single factor, more than any software setting</li>
+          <li><strong>Network adapter power management</strong> — Device Manager → your adapter → Properties → Power Management → uncheck "Allow the computer to turn off this device"</li>
+          <li><strong>Fortnite process priority → High</strong> — Task Manager → Details tab → FortniteClient-Win64-Shipping.exe → Set priority → High</li>
+          <li><strong>GPU Low Latency Mode → Ultra</strong> (Nvidia) or <strong>Anti-Lag → On</strong> (AMD) — see the matching hardware pack</li>
+          <li><strong>VSync off, Frame Rate Limit matched to your monitor</strong> — uncapped or mismatched frame rates can actually add input lag</li>
+        </ul>
+        <p class="tweak-modal-note">"0 delay" is the goal this bundle aims at, not a literal guarantee — real input delay depends on your full setup, including your monitor and peripherals.</p>
+      `
+    },
+    'potato-pro': {
+      tag: 'LOW-END',
+      title: 'Potato Graphics Pro',
+      html: `
+        <p>For PCs where the standard Potato/Low-End preset still isn't enough — the most aggressive visual-quality cuts on the site.</p>
+        <h3>Beyond the base Potato preset</h3>
+        <ul>
+          <li><strong>Resolution Scale</strong> — drop to 75–85% (base preset keeps this at 100%)</li>
+          <li><strong>Window Mode</strong> — Windowed Fullscreen instead of exclusive Fullscreen, which can reduce memory overhead on integrated graphics</li>
+          <li><strong>Close everything non-essential</strong> before launching — browser, Discord overlay, any second monitor apps</li>
+          <li><strong>Disable visual effects in Windows itself</strong> — Settings → System → About → Advanced system settings → Performance → Adjust for best performance</li>
+          <li><strong>Consider a lower target frame rate</strong> — capping to 30 or 45 FPS instead of 60 can mean far more consistent frame times on very weak hardware, even though the number is lower</li>
+        </ul>
+        <p class="tweak-modal-note">This trades a noticeable amount of visual quality for stability — start with the base Potato preset first, and only move to this if that's still not enough.</p>
+      `
     }
   };
 
