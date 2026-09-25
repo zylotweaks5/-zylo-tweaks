@@ -389,6 +389,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.style.overflow = 'hidden';
   }
 
+  // Also expose globally as a fallback, in case any button uses an inline
+  // onclick instead of the data-attribute listener below.
+  window.zyloOpenTweak = openTweakModal;
+
   function closeTweakModal() {
     if (!modal) return;
     modal.classList.remove('open');
@@ -408,6 +412,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeTweakModal();
+  });
+
+  // ---- Tweak Finder: simple rule-based matcher, not AI ----
+  var finderAnswers = { ram: null, brand: null };
+  var finderResult = document.getElementById('finder-result');
+
+  var finderMap = {
+    'low_amd':     { id: 'low-end',    name: 'Potato / Low-End Preset' },
+    'low_intel':   { id: 'low-end',    name: 'Potato / Low-End Preset' },
+    'low_nvidia':  { id: 'low-end',    name: 'Potato / Low-End Preset' },
+    'low_unsure':  { id: 'potato-pro', name: 'Potato Graphics Pro' },
+    'mid_amd':     { id: 'amd',        name: 'AMD Optimization' },
+    'mid_intel':   { id: 'intel',      name: 'Intel Optimization' },
+    'mid_nvidia':  { id: 'nvidia',     name: 'Nvidia Pack' },
+    'mid_unsure':  { id: 'pro',        name: 'Pro Tweaks' },
+    'high_amd':    { id: 'amd',        name: 'AMD Optimization' },
+    'high_intel':  { id: 'intel',      name: 'Intel Optimization' },
+    'high_nvidia': { id: 'nvidia',     name: 'Nvidia Pack' },
+    'high_unsure': { id: 'extreme',    name: 'Extreme Tweaks' }
+  };
+
+  function updateFinderResult() {
+    if (!finderAnswers.ram || !finderAnswers.brand || !finderResult) return;
+
+    var key = finderAnswers.ram + '_' + finderAnswers.brand;
+    var match = finderMap[key];
+    if (!match) return;
+
+    finderResult.innerHTML =
+      '<div class="finder-result-label">Based on what you picked:</div>' +
+      '<div class="finder-result-card">' +
+        '<span class="finder-result-name">' + match.name + '</span>' +
+        '<button type="button" class="btn btn-details" data-open-tweak="' + match.id + '" onclick="window.zyloOpenTweak && window.zyloOpenTweak(\'' + match.id + '\')">Open guide →</button>' +
+      '</div>';
+    finderResult.classList.add('show');
+  }
+
+  document.querySelectorAll('.finder-options').forEach(function (group) {
+    var groupName = group.getAttribute('data-group');
+    group.querySelectorAll('.finder-opt').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        group.querySelectorAll('.finder-opt').forEach(function (b) {
+          b.classList.remove('selected');
+        });
+        btn.classList.add('selected');
+        finderAnswers[groupName] = btn.getAttribute('data-value');
+        updateFinderResult();
+      });
+    });
   });
 
 });
