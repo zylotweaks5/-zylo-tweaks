@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZYLO TWEAKS — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E0C; --panel:#12160F; --panel2:#171C13; --line:#232A20;
+    --signal:#F4C93B; --signal-dim:#8A731F; --text:#E9EDE4; --text-dim:#8B9483;
+    --green-ok:#6FCF7A; --red:#E15B5B;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;}
+  h1,h2,h3{font-family:'Archivo Expanded',sans-serif;margin:0;}
+  .app{display:flex;min-height:100%;max-width:1100px;margin:0 auto;}
+  .sidebar{
+    width:220px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);
+    padding:28px 18px;display:flex;flex-direction:column;
+  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding:0 6px;}
+  .brand .mark{width:24px;height:24px;background:var(--signal);clip-path:polygon(60% 0, 0 58%, 40% 58%, 30% 100%, 100% 40%, 55% 40%);}
+  .brand span{font-weight:800;font-size:1rem;letter-spacing:-0.01em;}
+  .brand small{display:block;font-size:0.68rem;color:var(--text-dim);font-weight:400;}
+  nav.tabs{display:flex;flex-direction:column;gap:2px;flex:1;}
+  nav.tabs button{
+    display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text-dim);
+    padding:10px 12px;border-radius:7px;font-size:0.92rem;text-align:left;cursor:pointer;font-family:inherit;
+  }
+  nav.tabs button:hover{background:var(--panel2);color:var(--text);}
+  nav.tabs button.active{background:var(--panel2);color:var(--signal);}
+  nav.tabs button .ico{width:16px;text-align:center;}
+  .premium{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;margin-top:10px;}
+  .premium .crown{font-size:1.4rem;}
+  .premium p{font-size:0.78rem;color:var(--text-dim);margin:6px 0 12px;}
+  .premium button{
+    width:100%;background:var(--signal);color:#141400;border:none;border-radius:6px;
+    padding:9px;font-weight:600;font-size:0.85rem;cursor:pointer;font-family:inherit;
+  }
+
+  .main{flex:1;padding:32px;overflow:auto;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;margin-bottom:20px;}
+  .card h2{font-size:1.1rem;margin-bottom:8px;}
+  .card p.sub{color:var(--text-dim);font-size:0.88rem;margin:0;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;}
+  .stat h3{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--signal);margin-bottom:12px;}
+  .stat .row{display:flex;justify-content:space-between;font-size:0.86rem;padding:5px 0;color:var(--text-dim);}
+  .stat .row b{color:var(--text);font-weight:600;}
+  .stat .row .ok{color:var(--green-ok);font-weight:600;}
+
+  .actions{display:flex;gap:12px;}
+  .btn{border:none;border-radius:7px;padding:11px 20px;font-weight:600;font-size:0.9rem;cursor:pointer;font-family:inherit;}
+  .btn.apply{background:var(--signal);color:#141400;}
+  .btn.revert{background:var(--red);color:#1a0000;}
+  .btn.apply:hover{background:#ffd75a;} .btn.revert:hover{background:#ff7373;}
+
+  .tweak-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .tweak{background:var(--panel);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+  .tweak-text h3{font-size:0.92rem;font-family:'Inter';font-weight:600;margin-bottom:3px;}
+  .tweak-text p{font-size:0.82rem;color:var(--text-dim);margin:0;}
+  .toggle{width:40px;height:23px;border-radius:12px;background:var(--line);position:relative;flex-shrink:0;border:none;cursor:pointer;}
+  .toggle::after{content:'';position:absolute;width:17px;height:17px;border-radius:50%;background:var(--text-dim);top:3px;left:3px;transition:left .15s,background .15s;}
+  .toggle.on{background:var(--signal-dim);}
+  .toggle.on::after{background:var(--signal);left:20px;}
+
+  .potato-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .potato-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:28px;text-align:center;}
+  .potato-card h3{font-size:0.95rem;margin-bottom:4px;}
+  .potato-card p{color:var(--text-dim);font-size:0.8rem;margin:0 0 20px;}
+  .potato-card .glyph{font-size:2rem;margin-bottom:14px;}
+  .potato-card .row{display:flex;gap:10px;}
+  .potato-card .row .btn{flex:1;}
+
+  .placeholder{color:var(--text-dim);font-size:0.9rem;}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
+  @media(max-width:760px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;flex-direction:row;align-items:center;padding:14px 16px;overflow-x:auto;}
+    .brand{margin-bottom:0;}
+    nav.tabs{flex-direction:row;}
+    .premium{display:none;}
+    .stat-grid{grid-template-columns:1fr;}
+    .potato-grid{grid-template-columns:1fr;}
+    .tweak{flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><span class="mark"></span><span>ZYLO TWEAKS<small>OPTIMIZER</small></span></div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-view="dashboard"><span class="ico">▦</span> Dashboard</button>
+      <button class="tab-btn" data-view="tweaks"><span class="ico">✦</span> Tweaks</button>
+      <button class="tab-btn" data-view="potato"><span class="ico">◧</span> Potato</button>
+      <button class="tab-btn" data-view="sweats"><span class="ico">◎</span> Sweats</button>
+      <button class="tab-btn" data-view="credits"><span class="ico">©</span> Credits</button>
+    </nav>
+    <div class="premium">
+      <div class="crown">👑</div>
+      <p>Get more &amp; better tweaks</p>
+      <button onclick="alert('Pro coming soon.')">Upgrade to Pro</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <div class="view active" id="view-dashboard">
+      <div class="card">
+        <h2>ZYLO TWEAKS</h2>
+        <p class="sub">Free, open-source optimizer built specifically for Fortnite. Applies system, network and graphics tweaks with one click.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat">
+          <h3>System info</h3>
+          <div class="row"><span>Process count</span><span class="ok">Good</span></div>
+          <div class="row"><span>Threads</span><span class="ok">Good</span></div>
+        </div>
+        <div class="stat">
+          <h3>Optimization info</h3>
+          <div class="row"><span>Used optimizations</span><b id="applied-count">0 / 6</b></div>
+          <div class="row"><span>App version</span><span class="ok">Latest</span></div>
+        </div>
+        <div class="stat">
+          <h3>Software info</h3>
+          <div class="row"><span>Total downloads</span><b>—</b></div>
+          <div class="row"><span>Status</span><span class="ok">Up to date</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn apply" onclick="setAll(true)">Apply All Tweaks</button>
+        <button class="btn revert" onclick="setAll(false)">Revert All Tweaks</button>
+      </div>
+    </div>
+
+    <div class="view" id="view-tweaks">
+      <div class="card"><h2>Tweaks</h2><p class="sub">Flip any tweak on or off — each one tells you exactly what it does.</p></div>
+      <div class="tweak-list" id="tweak-list"></div>
+    </div>
+
+    <div class="view" id="view-potato">
+      <div class="card"><h2>Potato</h2><p class="sub">Low-end graphics presets for older or weaker PCs, split by GPU vendor.</p></div>
+      <div class="potato-grid">
+        <div class="potato-card">
+          <div class="glyph">🅰️</div>
+          <h3>AMD / Intel GPU</h3>
+          <p>Removes Fortnite's texture packs directly.</p>
+          <div class="row"><button class="btn apply">Apply tweaks</button><button class="btn revert">Restore default</button></div>
+        </div>
+        <div class="potato-card">
+          <div class="glyph">🅽</div>
+          <h3>Nvidia GPU only</h3>
+          <p>Uses an Nvidia profile inspector preset.</p>
+          <div class="row"><button class="btn apply">Apply tweaks</button><button class="btn revert">Restore default</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-sweats">
+      <div class="card"><h2>Sweats</h2><p class="placeholder">Competitive presets — sensitivity, keybinds and pro settings — coming soon.</p></div>
+    </div>
+
+    <div class="view" id="view-credits">
+      <div class="card">
+        <h2>Credits</h2>
+        <p class="sub" style="margin-top:10px;">Built by ZYLO. Join the Discord for support and updates: <a href="https://discord.gg/zAaH8uxAG" style="color:var(--signal);">discord.gg/zAaH8uxAG</a></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const tweaks = [
+    {name:"High CPU priority", desc:"Boosts Fortnite's CPU priority, giving it more processing power over background tasks.", on:false},
+    {name:"High GPU priority", desc:"Forces Fortnite to use the high-performance GPU, improving FPS and reducing latency.", on:false},
+    {name:"QoS optimization", desc:"Prioritizes Fortnite's network traffic to improve stability.", on:false},
+    {name:"Disable fullscreen optimization", desc:"Removes a Windows compositor step that adds input lag.", on:false},
+    {name:"Disable Fortnite mitigations", desc:"Disables unnecessary Windows security mitigations for a small performance gain.", on:false},
+    {name:"Enable high DPI awareness", desc:"Prevents scaling issues and keeps Fortnite sharp.", on:false},
+  ];
+
+  function renderTweaks(){
+    const list = document.getElementById('tweak-list');
+    list.innerHTML = tweaks.map((t,i)=>`
+      <div class="tweak">
+        <div class="tweak-text"><h3>${t.name}</h3><p>${t.desc}</p></div>
+        <button class="toggle ${t.on?'on':''}" onclick="toggleTweak(${i})" aria-pressed="${t.on}"></button>
+      </div>`).join('');
+    document.getElementById('applied-count').textContent = tweaks.filter(t=>t.on).length + ' / ' + tweaks.length;
+  }
+  function toggleTweak(i){ tweaks[i].on = !tweaks[i].on; renderTweaks(); }
+  function setAll(state){ tweaks.forEach(t=>t.on=state); renderTweaks(); }
+  renderTweaks();
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
