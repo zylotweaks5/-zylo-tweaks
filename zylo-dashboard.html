@@ -100,7 +100,7 @@
 
 <div class="app">
   <div class="sidebar">
-    <div class="brand"><span class="mark"></span><span>ZYLO TWEAKS<small>OPTIMIZER</small></span></div>
+    <a href="index.html" class="brand" style="text-decoration:none;color:inherit;"><span class="mark"></span><span>ZYLO TWEAKS<small>OPTIMIZER</small></span></a>
     <nav class="tabs">
       <button class="tab-btn active" data-view="dashboard"><span class="ico">▦</span> Dashboard</button>
       <button class="tab-btn" data-view="tweaks"><span class="ico">✦</span> Tweaks</button>
@@ -140,13 +140,14 @@
         </div>
       </div>
       <div class="actions">
-        <button class="btn apply" onclick="setAll(true)">Apply All Tweaks</button>
-        <button class="btn revert" onclick="setAll(false)">Revert All Tweaks</button>
+        <button class="btn apply" onclick="setAll(true); downloadApplyScript();">Apply All Tweaks</button>
+        <button class="btn revert" onclick="setAll(false); downloadRevertScript();">Revert All Tweaks</button>
       </div>
+      <p class="placeholder" style="margin-top:14px;">These buttons download a .ps1 script — run it as Administrator in PowerShell to apply the tweaks on your PC. Browsers can't change Windows settings directly.</p>
     </div>
 
     <div class="view" id="view-tweaks">
-      <div class="card"><h2>Tweaks</h2><p class="sub">Flip any tweak on or off — each one tells you exactly what it does.</p></div>
+      <div class="card"><h2>Tweaks</h2><p class="sub">Flip any tweak on or off — it downloads a tiny script that applies (or reverts) just that setting. Run it as Administrator for it to take effect.</p></div>
       <div class="tweak-list" id="tweak-list"></div>
     </div>
 
@@ -157,15 +158,16 @@
           <div class="glyph">🅰️</div>
           <h3>AMD / Intel GPU</h3>
           <p>Removes Fortnite's texture packs directly.</p>
-          <div class="row"><button class="btn apply">Apply tweaks</button><button class="btn revert">Restore default</button></div>
+          <div class="row"><button class="btn apply" onclick="downloadPotatoAmdIntel()">Apply tweaks</button><button class="btn revert" onclick="downloadPotatoRestore()">Restore default</button></div>
         </div>
         <div class="potato-card">
           <div class="glyph">🅽</div>
           <h3>Nvidia GPU only</h3>
           <p>Uses an Nvidia profile inspector preset.</p>
-          <div class="row"><button class="btn apply">Apply tweaks</button><button class="btn revert">Restore default</button></div>
+          <div class="row"><button class="btn apply" onclick="downloadPotatoNvidia()">Apply tweaks</button><button class="btn revert" onclick="downloadPotatoRestore()">Restore default</button></div>
         </div>
       </div>
+      <p class="placeholder" style="margin-top:14px;">These also download a .ps1 script to run as Administrator. The AMD/Intel script finds and safely backs up Fortnite's high-res texture packs before removing them; the Nvidia script sets the GPU preference registry key and points you to Nvidia Profile Inspector for the rest.</p>
     </div>
 
     <div class="view" id="view-sweats">
@@ -201,9 +203,157 @@
       </div>`).join('');
     document.getElementById('applied-count').textContent = tweaks.filter(t=>t.on).length + ' / ' + tweaks.length;
   }
-  function toggleTweak(i){ tweaks[i].on = !tweaks[i].on; renderTweaks(); }
+  function toggleTweak(i){
+    tweaks[i].on = !tweaks[i].on;
+    renderTweaks();
+    const name = tweaks[i].name;
+    if(name==="Disable fullscreen optimization" || name==="Enable high DPI awareness"){
+      downloadCompatScript();
+    } else {
+      downloadSingleTweakScript(name, tweaks[i].on);
+    }
+  }
   function setAll(state){ tweaks.forEach(t=>t.on=state); renderTweaks(); }
   renderTweaks();
+
+  // ---- Real tweak scripts (download-and-run-as-admin, since a webpage cannot touch Windows settings directly) ----
+  const EXE = "FortniteClient-Win64-Shipping.exe";
+  const LAYERS_KEY = `HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers`;
+  const LAYERS_VAL = `%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}`;
+
+  async function downloadFile(filename, content){
+    // In the claude.ai artifact preview, use the downloads capability (it doesn't allow .ps1,
+    // so save as .txt and ask the person to rename it before running).
+    if(typeof claude !== 'undefined' && claude.use){
+      try{
+        const downloads = await claude.use('downloads');
+        if(downloads){
+          const txtName = filename.replace(/\.ps1$/i, '.txt');
+          try{
+            await downloads.save({filename: txtName, data: content});
+            alert('Saved as ' + txtName + ' — rename it to .ps1 (right-click the file > Rename) before running it in PowerShell as Administrator.');
+            return;
+          }catch(err){
+            if(err && err.code === 'declined') return;
+            console.warn('downloads.save failed, falling back:', err);
+          }
+        }
+      }catch(err){ /* claude.use unavailable here — fall through to normal download */ }
+    }
+    // Normal browser download — this is what runs once the page is hosted on your own site.
+    const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // Simple, standalone tweaks — each has its own registry key
+  const REG_APPLY = {
+    "High CPU priority": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}\\PerfOptions" /v CpuPriorityClass /t REG_DWORD /d 3 /f`,
+    "High GPU priority": `reg add "HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreference" /v "%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}" /t REG_SZ /d "GpuPreference=2;" /f`,
+    "QoS optimization": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f`,
+    "Disable Fortnite mitigations": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}" /v MitigationOptions /t REG_QWORD /d 0 /f`,
+  };
+  const REG_REVERT = {
+    "High CPU priority": `reg delete "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}\\PerfOptions" /f`,
+    "High GPU priority": `reg delete "HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreference" /v "%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}" /f`,
+    "QoS optimization": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xa /f`,
+    "Disable Fortnite mitigations": `reg delete "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}" /v MitigationOptions /f`,
+  };
+
+  // "Disable fullscreen optimization" and "Enable high DPI awareness" both write flags into
+  // the SAME registry value (Windows combines compatibility flags space-separated in one string),
+  // so they're combined here instead of overwriting each other.
+  function compatFlags(){
+    const flags = [];
+    if(tweaks.find(t=>t.name==="Disable fullscreen optimization" && t.on)) flags.push("DISABLEDXMAXIMIZEDWINDOWEDMODE");
+    if(tweaks.find(t=>t.name==="Enable high DPI awareness" && t.on)) flags.push("HIGHDPIAWARE");
+    return flags;
+  }
+  function compatRegCommand(){
+    const flags = compatFlags();
+    if(flags.length===0) return `reg delete "${LAYERS_KEY}" /v "${LAYERS_VAL}" /f`;
+    return `reg add "${LAYERS_KEY}" /v "${LAYERS_VAL}" /t REG_SZ /d "~ ${flags.join(' ')}" /f`;
+  }
+
+  function scriptHeader(title){
+    return `# ZYLO TWEAKS — ${title}\n# Run in PowerShell AS ADMINISTRATOR (right-click PowerShell > Run as administrator)\n\n`;
+  }
+
+  function downloadSingleTweakScript(name, isOn){
+    const cmd = isOn ? REG_APPLY[name] : REG_REVERT[name];
+    const script = scriptHeader(name + (isOn?" — apply":" — revert")) + cmd + "\n\nWrite-Host 'Done. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+    downloadFile(`zylo-${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ps1`, script);
+  }
+
+  function downloadCompatScript(){
+    const script = scriptHeader("Fullscreen / DPI settings") + compatRegCommand() + "\n\nWrite-Host 'Done. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+    downloadFile("zylo-fullscreen-dpi.ps1", script);
+  }
+
+  function downloadApplyScript(){
+    let script = scriptHeader("Apply all");
+    const simple = tweaks.filter(t=>t.on && REG_APPLY[t.name]);
+    if(simple.length===0 && compatFlags().length===0){ script += "# No tweaks were switched on — nothing to apply.\n"; }
+    simple.forEach(t=>{ script += `# ${t.name}\n${REG_APPLY[t.name]}\n\n`; });
+    if(compatFlags().length>0){ script += `# Fullscreen / DPI settings\n${compatRegCommand()}\n\n`; }
+    script += "Write-Host 'Done. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+    downloadFile("zylo-apply-tweaks.ps1", script);
+  }
+
+  function downloadRevertScript(){
+    let script = scriptHeader("Revert all");
+    Object.values(REG_REVERT).forEach(cmd=>{ script += cmd + "\n"; });
+    script += `reg delete "${LAYERS_KEY}" /v "${LAYERS_VAL}" /f\n`;
+    script += "Write-Host 'Reverted. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+    downloadFile("zylo-revert-tweaks.ps1", script);
+  }
+
+  function downloadPotatoAmdIntel(){
+    const script = `# ZYLO TWEAKS — Potato preset (AMD / Intel)
+# Run in PowerShell AS ADMINISTRATOR. Close Fortnite and the Epic Games Launcher first.
+
+$paksPath = "$env:LOCALAPPDATA\\..\\Local\\FortniteGame\\Content\\Paks"
+if(-not (Test-Path $paksPath)){
+  Write-Host "Could not find Fortnite's Paks folder automatically. Edit `$paksPath at the top of this script to your install location, e.g. C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Content\\Paks" -ForegroundColor Red
+  exit
+}
+$backup = "$paksPath\\_zylo_backup"
+New-Item -ItemType Directory -Force -Path $backup | Out-Null
+Get-ChildItem $paksPath -Filter "*optional*.pak" | ForEach-Object {
+  Move-Item $_.FullName -Destination $backup -Force
+  Write-Host "Moved $($_.Name) to backup"
+}
+Write-Host "Done. Verify the game via Epic Games Launcher if anything looks wrong — it will re-download what's missing." -ForegroundColor Yellow`;
+    downloadFile("zylo-potato-amd-intel.ps1", script);
+  }
+
+  function downloadPotatoNvidia(){
+    const script = `# ZYLO TWEAKS — Potato preset (Nvidia)
+# Run in PowerShell AS ADMINISTRATOR
+
+${REG_APPLY["High GPU priority"]}
+Write-Host "GPU preference set to High performance for Fortnite." -ForegroundColor Yellow
+Write-Host "For full Nvidia-specific low settings, install Nvidia Profile Inspector: https://github.com/Orbmu2k/nvidiaProfileInspector" -ForegroundColor Yellow`;
+    downloadFile("zylo-potato-nvidia.ps1", script);
+  }
+
+  function downloadPotatoRestore(){
+    const script = `# ZYLO TWEAKS — Restore default graphics
+# Run in PowerShell AS ADMINISTRATOR
+
+$backup = "$env:LOCALAPPDATA\\..\\Local\\FortniteGame\\Content\\Paks\\_zylo_backup"
+if(Test-Path $backup){
+  Get-ChildItem $backup | ForEach-Object { Move-Item $_.FullName -Destination (Split-Path $backup) -Force }
+  Write-Host "Restored texture packs from backup." -ForegroundColor Yellow
+} else {
+  Write-Host "No backup found — nothing to restore." -ForegroundColor Yellow
+}
+reg delete "HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreference" /v "%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}" /f`;
+    downloadFile("zylo-potato-restore.ps1", script);
+  }
 
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
