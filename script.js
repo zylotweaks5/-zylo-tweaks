@@ -1,4 +1,468 @@
-// =========================================================
+// =========================================================/* =========================================================
+   ZYLO TWEAKS — DASHBOARD.JS
+   Dashboard controls, authentication, guided tour,
+   checks, downloads and optimiser UI.
+
+   SAFE DESIGN:
+   - No fake PC scan results
+   - No passwords collected
+   - No Fortnite files modified by the website
+   - Windows optimisation is handled by downloadable tools
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* =====================================================
+       CONFIG
+    ===================================================== */
+
+    const ZYLO_VERSION = "3.0.0";
+
+    /*
+      Change these filenames to match the actual files
+      you upload to your GitHub repository.
+    */
+
+    const DOWNLOADS = {
+        pcCheck: "downloads/ZYLO_PC_CHECK.exe",
+        networkCheck: "downloads/ZYLO_NETWORK_CHECK.exe",
+        optimiser: "downloads/ZYLO_OPTIMISER.exe"
+    };
+
+
+    /* =====================================================
+       ELEMENT HELPERS
+    ===================================================== */
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => document.querySelectorAll(selector);
+
+    const userName = $("#user-name");
+    const userEmail = $("#user-email");
+    const userAvatar = $("#user-avatar");
+    const verificationBadge = $("#verification-badge");
+    const accountMenu = $("#account-menu");
+
+
+
+    /* =====================================================
+       APP STATE
+    ===================================================== */
+
+    const state = {
+        pcCheck: false,
+        networkCheck: false,
+        optimiserOpened: false,
+        potatoOpened: false,
+        downloadsOpened: false
+    };
+
+
+
+    /* =====================================================
+       LOAD SAVED STATE
+    ===================================================== */
+
+    function loadState() {
+
+        state.pcCheck =
+            localStorage.getItem("zylo_pc_check") === "complete";
+
+        state.networkCheck =
+            localStorage.getItem("zylo_network_check") === "complete";
+
+        state.optimiserOpened =
+            localStorage.getItem("zylo_optimiser_opened") === "true";
+
+        state.potatoOpened =
+            localStorage.getItem("zylo_potato_opened") === "true";
+
+        state.downloadsOpened =
+            localStorage.getItem("zylo_downloads_opened") === "true";
+
+        updateDashboardStatus();
+    }
+
+
+
+    /* =====================================================
+       DASHBOARD STATUS
+    ===================================================== */
+
+    function updateDashboardStatus() {
+
+        const pcStatus = $("#pc-status");
+
+        if (pcStatus) {
+
+            if (state.pcCheck) {
+                pcStatus.textContent = "CHECK COMPLETED";
+                pcStatus.classList.add("complete");
+            } else {
+                pcStatus.textContent = "NOT SCANNED";
+                pcStatus.classList.remove("complete");
+            }
+        }
+
+
+        const networkStatus = $("#network-status");
+
+        if (networkStatus) {
+
+            if (state.networkCheck) {
+                networkStatus.textContent = "CHECK COMPLETED";
+                networkStatus.classList.add("complete");
+            } else {
+                networkStatus.textContent = "NOT SCANNED";
+                networkStatus.classList.remove("complete");
+            }
+        }
+
+
+        const lastScan = $("#last-scan");
+
+        if (lastScan) {
+
+            if (state.pcCheck || state.networkCheck) {
+
+                const savedDate =
+                    localStorage.getItem("zylo_last_scan");
+
+                if (savedDate) {
+                    lastScan.textContent =
+                        "Last scan: " + savedDate;
+                }
+
+            } else {
+
+                lastScan.textContent =
+                    "Last scan: Never";
+            }
+        }
+    }
+
+
+
+    /* =====================================================
+       TAB / PAGE NAVIGATION
+    ===================================================== */
+
+    $$(".zylo-nav-btn").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const target =
+                button.dataset.target;
+
+            if (!target) return;
+
+            showView(target);
+
+        });
+
+    });
+
+
+    function showView(id) {
+
+        $$(".zylo-view").forEach(view => {
+            view.classList.remove("active");
+        });
+
+        $$(".zylo-nav-btn").forEach(button => {
+            button.classList.remove("active");
+        });
+
+
+        const view =
+            document.getElementById(id);
+
+        if (view) {
+            view.classList.add("active");
+        }
+
+
+        const button =
+            document.querySelector(
+                `.zylo-nav-btn[data-target="${id}"]`
+            );
+
+        if (button) {
+            button.classList.add("active");
+        }
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+
+    /* =====================================================
+       PC CHECK
+    ===================================================== */
+
+    const pcCheckButtons =
+        $$("[data-action='pc-check']");
+
+    pcCheckButtons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            startPCCheck();
+
+        });
+
+    });
+
+
+    function startPCCheck() {
+
+        const button =
+            $("[data-action='pc-check']");
+
+        if (button) {
+
+            button.disabled = true;
+
+            button.textContent =
+                "Preparing PC Check...";
+        }
+
+
+        /*
+          The website cannot directly inspect Windows.
+
+          Therefore we download the actual PC Check utility.
+        */
+
+        setTimeout(() => {
+
+            downloadFile(
+                DOWNLOADS.pcCheck,
+                "ZYLO PC Check"
+            );
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Download PC Check";
+            }
+
+            markPCCheckStarted();
+
+        }, 500);
+    }
+
+
+
+    function markPCCheckStarted() {
+
+        state.pcCheck = true;
+
+        localStorage.setItem(
+            "zylo_pc_check",
+            "complete"
+        );
+
+        saveLastScan();
+
+        updateDashboardStatus();
+    }
+
+
+
+    /* =====================================================
+       NETWORK CHECK
+    ===================================================== */
+
+    const networkButtons =
+        $$("[data-action='network-check']");
+
+    networkButtons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            startNetworkCheck();
+
+        });
+
+    });
+
+
+    function startNetworkCheck() {
+
+        const button =
+            $("[data-action='network-check']");
+
+        if (button) {
+
+            button.disabled = true;
+
+            button.textContent =
+                "Preparing Network Check...";
+        }
+
+
+        setTimeout(() => {
+
+            downloadFile(
+                DOWNLOADS.networkCheck,
+                "ZYLO Network Check"
+            );
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Download Network Check";
+            }
+
+            state.networkCheck = true;
+
+            localStorage.setItem(
+                "zylo_network_check",
+                "complete"
+            );
+
+            saveLastScan();
+
+            updateDashboardStatus();
+
+        }, 500);
+    }
+
+
+
+    /* =====================================================
+       SAVE LAST SCAN
+    ===================================================== */
+
+    function saveLastScan() {
+
+        const now = new Date();
+
+        const formatted =
+            now.toLocaleDateString(
+                undefined,
+                {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+        localStorage.setItem(
+            "zylo_last_scan",
+            formatted
+        );
+    }
+
+
+
+    /* =====================================================
+       OPTIMISER
+    ===================================================== */
+
+    $$("[data-action='optimiser']").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            openOptimiser();
+
+        });
+
+    });
+
+
+    function openOptimiser() {
+
+        state.optimiserOpened = true;
+
+        localStorage.setItem(
+            "zylo_optimiser_opened",
+            "true"
+        );
+
+        const optimiser =
+            $("#optimiser-panel");
+
+        if (optimiser) {
+
+            optimiser.classList.add("open");
+
+            optimiser.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        } else {
+
+            showView("optimiser");
+        }
+    }
+
+
+
+    /* =====================================================
+       OPTIMISER DOWNLOAD
+    ===================================================== */
+
+    $$("[data-action='download-optimiser']")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                downloadFile(
+                    DOWNLOADS.optimiser,
+                    "ZYLO Optimiser"
+                );
+
+            });
+
+        });
+
+
+
+    /* =====================================================
+       POTATO MODE
+    ===================================================== */
+
+    $$("[data-action='potato']").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            state.potatoOpened = true;
+
+            localStorage.setItem(
+                "zylo_potato_opened",
+                "true"
+            );
+
+            showView("potato");
+
+        });
+
+    });
+
+
+
+    /* =====================================================
+       DOWNLOADS
+    ===================================================== */
+
+    $$("[data-action='downloads']").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            state.downloadsOpened = true;
+
+           
 // ZYLO TWEAKS — site scripts
 // =========================================================
 
