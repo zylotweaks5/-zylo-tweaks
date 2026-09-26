@@ -1,274 +1,178 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ZYLO TWEAKS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#0B0E0C;
-    --bg-raised:#12160F;
-    --line:#232A20;
-    --signal:#F4C93B;
-    --signal-dim:#8A731F;
-    --text:#E9EDE4;
-    --text-dim:#8B9483;
-    --green-ok:#6FCF7A;
-    box-sizing:border-box;
-    padding-top:env(safe-area-inset-top,0px);
-    padding-bottom:env(safe-area-inset-bottom,0px);
+const tweaks = [
+  {name:"High CPU priority", desc:"Boosts Fortnite's CPU priority, giving it more processing power over background tasks.", on:false},
+  {name:"High GPU priority", desc:"Forces Fortnite to use the high-performance GPU, improving FPS and reducing latency.", on:false},
+  {name:"QoS optimization", desc:"Prioritizes Fortnite's network traffic to improve stability.", on:false},
+  {name:"Disable fullscreen optimization", desc:"Removes a Windows compositor step that adds input lag.", on:false},
+  {name:"Disable Fortnite mitigations", desc:"Disables unnecessary Windows security mitigations for a small performance gain.", on:false},
+  {name:"Enable high DPI awareness", desc:"Prevents scaling issues and keeps Fortnite sharp.", on:false},
+];
+
+function renderTweaks(){
+  const list = document.getElementById('tweak-list');
+  list.innerHTML = tweaks.map((t,i)=>`
+    <div class="tweak">
+      <div class="tweak-text"><h3>${t.name}</h3><p>${t.desc}</p></div>
+      <button class="toggle ${t.on?'on':''}" onclick="toggleTweak(${i})" aria-pressed="${t.on}"></button>
+    </div>`).join('');
+  document.getElementById('applied-count').textContent = tweaks.filter(t=>t.on).length + ' / ' + tweaks.length;
+}
+function toggleTweak(i){
+  tweaks[i].on = !tweaks[i].on;
+  renderTweaks();
+  const name = tweaks[i].name;
+  if(name==="Disable fullscreen optimization" || name==="Enable high DPI awareness"){
+    downloadCompatScript();
+  } else {
+    downloadSingleTweakScript(name, tweaks[i].on);
   }
-  @media (prefers-color-scheme: light){
-    :root:not([data-theme="dark"]){
-      --bg:#0B0E0C; --bg-raised:#12160F; --line:#232A20; --text:#E9EDE4; --text-dim:#8B9483;
-    }
+}
+function setAll(state){ tweaks.forEach(t=>t.on=state); renderTweaks(); }
+renderTweaks();
+
+// ---- Real tweak scripts (download-and-run-as-admin, since a webpage cannot touch Windows settings directly) ----
+const EXE = "FortniteClient-Win64-Shipping.exe";
+const LAYERS_KEY = `HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers`;
+const LAYERS_VAL = `%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}`;
+
+async function downloadFile(filename, content){
+  // In the claude.ai artifact preview, use the downloads capability (it doesn't allow .ps1,
+  // so save as .txt and ask the person to rename it before running).
+  if(typeof claude !== 'undefined' && claude.use){
+    try{
+      const downloads = await claude.use('downloads');
+      if(downloads){
+        const txtName = filename.replace(/\.ps1$/i, '.txt');
+        try{
+          await downloads.save({filename: txtName, data: content});
+          alert('Saved as ' + txtName + ' — rename it to .ps1 (right-click the file > Rename) before running it in PowerShell as Administrator.');
+          return;
+        }catch(err){
+          if(err && err.code === 'declined') return;
+          console.warn('downloads.save failed, falling back:', err);
+        }
+      }
+    }catch(err){ /* claude.use unavailable here — fall through to normal download */ }
   }
-  html{scroll-padding-top:env(safe-area-inset-top,0px);}
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Inter',system-ui,sans-serif;
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  h1,h2,h3{font-family:'Archivo Expanded',sans-serif;margin:0;letter-spacing:-0.01em;}
+  // Normal browser download — this is what runs once the page is hosted on your own site.
+  const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
 
-  header{
-    position:sticky;top:0;
-    padding-top:calc(16px + env(safe-area-inset-top,0px));
-    padding-bottom:16px;
-    background:rgba(11,14,12,0.9);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-    z-index:10;
-  }
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;}
-  .logo .mark{
-    width:26px;height:26px;background:var(--signal);
-    clip-path:polygon(60% 0, 0 58%, 40% 58%, 30% 100%, 100% 40%, 55% 40%);
-  }
-  nav.links{display:flex;gap:28px;font-size:0.92rem;color:var(--text-dim);}
-  nav.links a{color:var(--text-dim);text-decoration:none;}
-  nav.links a:hover{color:var(--text);}
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    background:var(--signal);color:#141400;font-weight:600;
-    padding:11px 20px;border-radius:6px;text-decoration:none;
-    font-size:0.92rem;border:none;cursor:pointer;
-  }
-  .btn:hover{background:#ffd75a;}
-  .btn-ghost{
-    background:transparent;color:var(--text);border:1px solid var(--line);
-  }
-  .btn-ghost:hover{border-color:var(--text-dim);}
+// Simple, standalone tweaks — each has its own registry key
+const REG_APPLY = {
+  "High CPU priority": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}\\PerfOptions" /v CpuPriorityClass /t REG_DWORD /d 3 /f`,
+  "High GPU priority": `reg add "HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreference" /v "%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}" /t REG_SZ /d "GpuPreference=2;" /f`,
+  "QoS optimization": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f`,
+  "Disable Fortnite mitigations": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}" /v MitigationOptions /t REG_QWORD /d 0 /f`,
+};
+const REG_REVERT = {
+  "High CPU priority": `reg delete "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}\\PerfOptions" /f`,
+  "High GPU priority": `reg delete "HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreference" /v "%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}" /f`,
+  "QoS optimization": `reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xa /f`,
+  "Disable Fortnite mitigations": `reg delete "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\${EXE}" /v MitigationOptions /f`,
+};
 
-  section{padding:88px 0;border-bottom:1px solid var(--line);}
-  section:last-of-type{border-bottom:none;}
+// "Disable fullscreen optimization" and "Enable high DPI awareness" both write flags into
+// the SAME registry value (Windows combines compatibility flags space-separated in one string),
+// so they're combined here instead of overwriting each other.
+function compatFlags(){
+  const flags = [];
+  if(tweaks.find(t=>t.name==="Disable fullscreen optimization" && t.on)) flags.push("DISABLEDXMAXIMIZEDWINDOWEDMODE");
+  if(tweaks.find(t=>t.name==="Enable high DPI awareness" && t.on)) flags.push("HIGHDPIAWARE");
+  return flags;
+}
+function compatRegCommand(){
+  const flags = compatFlags();
+  if(flags.length===0) return `reg delete "${LAYERS_KEY}" /v "${LAYERS_VAL}" /f`;
+  return `reg add "${LAYERS_KEY}" /v "${LAYERS_VAL}" /t REG_SZ /d "~ ${flags.join(' ')}" /f`;
+}
 
-  .hero{padding-top:72px;padding-bottom:72px;}
-  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:center;}
-  .hero h1{font-size:clamp(2.4rem,5vw,3.6rem);line-height:1.04;}
-  .hero p.lead{color:var(--text-dim);font-size:1.08rem;max-width:46ch;margin:20px 0 32px;}
-  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;}
+function scriptHeader(title){
+  return `# ZYLO TWEAKS — ${title}\n# Run in PowerShell AS ADMINISTRATOR (right-click PowerShell > Run as administrator)\n\n`;
+}
 
-  .readout{
-    background:var(--bg-raised);border:1px solid var(--line);border-radius:10px;
-    padding:22px;font-size:0.9rem;
-  }
-  .readout .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);}
-  .readout .row:last-child{border-bottom:none;}
-  .readout .label{color:var(--text-dim);}
-  .readout .value{font-weight:600;}
-  .readout .value.ok{color:var(--green-ok);}
-  .readout-title{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:14px;}
+function downloadSingleTweakScript(name, isOn){
+  const cmd = isOn ? REG_APPLY[name] : REG_REVERT[name];
+  const script = scriptHeader(name + (isOn?" — apply":" — revert")) + cmd + "\n\nWrite-Host 'Done. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+  downloadFile(`zylo-${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ps1`, script);
+}
 
-  .section-head{max-width:52ch;margin-bottom:44px;}
-  .section-head h2{font-size:1.9rem;}
-  .section-head p{color:var(--text-dim);margin-top:12px;}
+function downloadCompatScript(){
+  const script = scriptHeader("Fullscreen / DPI settings") + compatRegCommand() + "\n\nWrite-Host 'Done. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+  downloadFile("zylo-fullscreen-dpi.ps1", script);
+}
 
-  .tweak-list{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-  .tweak{background:var(--bg-raised);padding:22px;}
-  .tweak-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
-  .tweak-top h3{font-family:'Inter';font-weight:600;font-size:1rem;}
-  .toggle{width:38px;height:22px;border-radius:11px;background:var(--line);position:relative;flex-shrink:0;}
-  .toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:var(--text-dim);top:3px;left:3px;}
-  .toggle.on{background:var(--signal-dim);}
-  .toggle.on::after{background:var(--signal);left:19px;}
-  .tweak p{color:var(--text-dim);font-size:0.88rem;margin:0;}
+function downloadApplyScript(){
+  let script = scriptHeader("Apply all");
+  const simple = tweaks.filter(t=>t.on && REG_APPLY[t.name]);
+  if(simple.length===0 && compatFlags().length===0){ script += "# No tweaks were switched on — nothing to apply.\n"; }
+  simple.forEach(t=>{ script += `# ${t.name}\n${REG_APPLY[t.name]}\n\n`; });
+  if(compatFlags().length>0){ script += `# Fullscreen / DPI settings\n${compatRegCommand()}\n\n`; }
+  script += "Write-Host 'Done. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+  downloadFile("zylo-apply-tweaks.ps1", script);
+}
 
-  .potato{display:grid;grid-template-columns:0.9fr 1.1fr;gap:56px;align-items:center;}
-  .potato-visual{
-    background:var(--bg-raised);border:1px solid var(--line);border-radius:10px;padding:28px;
-    display:grid;grid-template-columns:1fr 1fr;gap:16px;
-  }
-  .gpu-card{border:1px solid var(--line);border-radius:8px;padding:18px;text-align:center;}
-  .gpu-card .dot{width:8px;height:8px;border-radius:50%;background:var(--green-ok);margin:0 auto 10px;}
-  .gpu-card h4{font-family:'Inter';font-size:0.85rem;font-weight:600;margin:0 0 4px;}
-  .gpu-card span{color:var(--text-dim);font-size:0.76rem;}
+function downloadRevertScript(){
+  let script = scriptHeader("Revert all");
+  Object.values(REG_REVERT).forEach(cmd=>{ script += cmd + "\n"; });
+  script += `reg delete "${LAYERS_KEY}" /v "${LAYERS_VAL}" /f\n`;
+  script += "Write-Host 'Reverted. Restart Fortnite for changes to take effect.' -ForegroundColor Yellow\n";
+  downloadFile("zylo-revert-tweaks.ps1", script);
+}
 
-  .tiers{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-  .tier{background:var(--bg-raised);border:1px solid var(--line);border-radius:10px;padding:28px;}
-  .tier.pro{border-color:var(--signal-dim);}
-  .tier .price{font-family:'Archivo Expanded';font-size:2.1rem;margin:10px 0 18px;}
-  .tier .price span{font-size:0.95rem;color:var(--text-dim);font-weight:400;}
-  .tier ul{list-style:none;padding:0;margin:0 0 24px;color:var(--text-dim);font-size:0.92rem;}
-  .tier li{padding:7px 0;border-bottom:1px solid var(--line);}
-  .tier li:last-child{border-bottom:none;}
+function downloadPotatoAmdIntel(){
+  const script = `# ZYLO TWEAKS — Potato preset (AMD / Intel)
+# Run in PowerShell AS ADMINISTRATOR. Close Fortnite and the Epic Games Launcher first.
 
-  footer{padding:36px 0;text-align:center;color:var(--text-dim);font-size:0.85rem;}
-  footer a{color:var(--text-dim);}
+$paksPath = "$env:LOCALAPPDATA\\..\\Local\\FortniteGame\\Content\\Paks"
+if(-not (Test-Path $paksPath)){
+  Write-Host "Could not find Fortnite's Paks folder automatically. Edit `$paksPath at the top of this script to your install location, e.g. C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Content\\Paks" -ForegroundColor Red
+  exit
+}
+$backup = "$paksPath\\_zylo_backup"
+New-Item -ItemType Directory -Force -Path $backup | Out-Null
+Get-ChildItem $paksPath -Filter "*optional*.pak" | ForEach-Object {
+  Move-Item $_.FullName -Destination $backup -Force
+  Write-Host "Moved $($_.Name) to backup"
+}
+Write-Host "Done. Verify the game via Epic Games Launcher if anything looks wrong — it will re-download what's missing." -ForegroundColor Yellow`;
+  downloadFile("zylo-potato-amd-intel.ps1", script);
+}
 
-  @media(max-width:760px){
-    nav.links{display:none;}
-    .hero-grid,.potato{grid-template-columns:1fr;}
-    .tweak-list{grid-template-columns:1fr;}
-    .tiers{grid-template-columns:1fr;}
-    section{padding:56px 0;}
-  }
-  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
-  @media (prefers-reduced-motion: reduce){*{transition:none!important;}}
-</style>
-</head>
-<body>
+function downloadPotatoNvidia(){
+  const script = `# ZYLO TWEAKS — Potato preset (Nvidia)
+# Run in PowerShell AS ADMINISTRATOR
 
-<header>
-  <div class="wrap nav">
-    <div class="logo"><span class="mark"></span>ZYLO TWEAKS</div>
-    <nav class="links">
-      <a href="#tweaks">Tweaks</a>
-      <a href="#potato">Low End</a>
-      <a href="#pricing">Pricing</a>
-      <a href="https://discord.gg/zAaH8uxAG">Discord</a>
-    </nav>
-    <a class="btn" href="https://claude.ai/artifact/F3B4kqGaCmSYzDbmZNkiGg" target="_blank" rel="noopener">Launch Dashboard</a>
-  </div>
-</header>
+${REG_APPLY["High GPU priority"]}
+Write-Host "GPU preference set to High performance for Fortnite." -ForegroundColor Yellow
+Write-Host "For full Nvidia-specific low settings, install Nvidia Profile Inspector: https://github.com/Orbmu2k/nvidiaProfileInspector" -ForegroundColor Yellow`;
+  downloadFile("zylo-potato-nvidia.ps1", script);
+}
 
-<section class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <h1>Squeeze more frames out of the same PC.</h1>
-      <p class="lead">ZYLO TWEAKS is a free Fortnite optimizer for Windows. One click applies system, network, and graphics tweaks built specifically for Fortnite — no manual registry editing.</p>
-      <div class="hero-cta">
-        <a class="btn" href="https://claude.ai/artifact/F3B4kqGaCmSYzDbmZNkiGg" target="_blank" rel="noopener">Launch Dashboard</a>
-        <a class="btn btn-ghost" href="#tweaks">See what it changes</a>
-      </div>
-    </div>
-    <div class="readout">
-      <div class="readout-title">Live system readout</div>
-      <div class="row"><span class="label">CPU priority</span><span class="value ok">Boosted</span></div>
-      <div class="row"><span class="label">GPU scheduling</span><span class="value ok">High performance</span></div>
-      <div class="row"><span class="label">Network jitter</span><span class="value ok">Reduced</span></div>
-      <div class="row"><span class="label">Background processes</span><span class="value">41 trimmed</span></div>
-      <div class="row"><span class="label">Tweaks applied</span><span class="value">14 / 17</span></div>
-    </div>
-  </div>
-</section>
+function downloadPotatoRestore(){
+  const script = `# ZYLO TWEAKS — Restore default graphics
+# Run in PowerShell AS ADMINISTRATOR
 
-<section id="tweaks">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Every tweak, explained before you flip it</h2>
-      <p>No black boxes. Each switch tells you exactly what it does to your system before you turn it on.</p>
-    </div>
-    <div class="tweak-list">
-      <div class="tweak">
-        <div class="tweak-top"><h3>High CPU priority</h3><div class="toggle on"></div></div>
-        <p>Gives Fortnite more processing power over background tasks.</p>
-      </div>
-      <div class="tweak">
-        <div class="tweak-top"><h3>High GPU priority</h3><div class="toggle on"></div></div>
-        <p>Forces your dedicated GPU to run Fortnite instead of onboard graphics.</p>
-      </div>
-      <div class="tweak">
-        <div class="tweak-top"><h3>Network packet priority</h3><div class="toggle on"></div></div>
-        <p>Prioritizes Fortnite's traffic on your connection to cut jitter.</p>
-      </div>
-      <div class="tweak">
-        <div class="tweak-top"><h3>Disable fullscreen optimization</h3><div class="toggle"></div></div>
-        <p>Removes a Windows compositor step that adds input lag.</p>
-      </div>
-      <div class="tweak">
-        <div class="tweak-top"><h3>Trim background processes</h3><div class="toggle on"></div></div>
-        <p>Closes non-essential apps competing for CPU and RAM.</p>
-      </div>
-      <div class="tweak">
-        <div class="tweak-top"><h3>High DPI awareness</h3><div class="toggle"></div></div>
-        <p>Stops Windows from scaling Fortnite's window, keeping it sharp.</p>
-      </div>
-    </div>
-  </div>
-</section>
+$backup = "$env:LOCALAPPDATA\\..\\Local\\FortniteGame\\Content\\Paks\\_zylo_backup"
+if(Test-Path $backup){
+  Get-ChildItem $backup | ForEach-Object { Move-Item $_.FullName -Destination (Split-Path $backup) -Force }
+  Write-Host "Restored texture packs from backup." -ForegroundColor Yellow
+} else {
+  Write-Host "No backup found — nothing to restore." -ForegroundColor Yellow
+}
+reg delete "HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreference" /v "%LOCALAPPDATA%\\FortniteGame\\Binaries\\Win64\\${EXE}" /f`;
+  downloadFile("zylo-potato-restore.ps1", script);
+}
 
-<section id="potato">
-  <div class="wrap potato">
-    <div class="potato-visual">
-      <div class="gpu-card"><div class="dot"></div><h4>AMD / Intel</h4><span>Texture pack removal</span></div>
-      <div class="gpu-card"><div class="dot"></div><h4>Nvidia</h4><span>Profile inspector preset</span></div>
-    </div>
-    <div>
-      <div class="section-head" style="margin-bottom:20px;">
-        <h2>Built for low-end PCs too</h2>
-        <p>The Potato preset strips Fortnite down to its lowest possible graphics load, with a separate path for AMD/Intel and Nvidia hardware, so a five-year-old laptop can still hold a stable frame rate.</p>
-      </div>
-      <a class="btn btn-ghost" href="#download">Try the Potato preset</a>
-    </div>
-  </div>
-</section>
-
-<section id="pricing">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Free covers most of it</h2>
-      <p>Upgrade only if you want the extra tweaks and presets on top.</p>
-    </div>
-    <div class="tiers">
-      <div class="tier">
-        <h3>Free</h3>
-        <div class="price">$0</div>
-        <ul>
-          <li>Core CPU / GPU priority tweaks</li>
-          <li>Network jitter reduction</li>
-          <li>Potato graphics preset</li>
-          <li>Community Discord support</li>
-        </ul>
-        <a class="btn btn-ghost" href="#download" style="width:100%;justify-content:center;">Download free</a>
-      </div>
-      <div class="tier pro">
-        <h3>Pro</h3>
-        <div class="price">$4<span>/mo</span></div>
-        <ul>
-          <li>Everything in Free</li>
-          <li>Advanced kernel-level tweaks</li>
-          <li>Custom Nvidia profile presets</li>
-          <li>Priority Discord support</li>
-        </ul>
-        <a class="btn" href="#" style="width:100%;justify-content:center;">Upgrade to Pro</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="download" style="text-align:center;">
-  <div class="wrap">
-    <h2 style="font-size:2rem;margin-bottom:14px;">Ready when you are.</h2>
-    <p style="color:var(--text-dim);margin-bottom:28px;">Runs right in your browser — no install needed.</p>
-    <a class="btn" href="https://claude.ai/artifact/F3B4kqGaCmSYzDbmZNkiGg" target="_blank" rel="noopener">Launch Dashboard</a>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    ZYLO TWEAKS · <a href="https://discord.gg/zAaH8uxAG">Discord</a>
-  </div>
-</footer>
-
-</body>
-</html>
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  });
+});
