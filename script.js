@@ -1,74 +1,96 @@
 /* =========================================================
-   ZYLO TWEAKS — MAIN SCRIPT
-   Landing page controls, FAQ, tweak finder,
-   tweak guide modal, animations and mobile menu.
+   ZYLO TWEAKS — COMBINED SCRIPT
+   Main website + Dashboard
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
 
     /* =====================================================
-       MOBILE MENU
+       HELPERS
     ===================================================== */
 
-    const menuButton = document.querySelector(".menu-toggle");
-    const nav = document.querySelector(".site-nav");
+    function $(selector) {
+        return document.querySelector(selector);
+    }
 
-    if (menuButton && nav) {
-        menuButton.addEventListener("click", () => {
-            nav.classList.toggle("open");
-            menuButton.classList.toggle("open");
-        });
+    function $$(selector) {
+        return document.querySelectorAll(selector);
     }
 
 
     /* =====================================================
-       FAQ ACCORDION
+       MAIN WEBSITE — MOBILE MENU
     ===================================================== */
 
-    document.querySelectorAll(".faq-question").forEach(question => {
+    const menuButton = $(".menu-toggle");
+    const nav = $(".site-nav");
 
-        question.addEventListener("click", () => {
+    if (menuButton && nav) {
+
+        menuButton.addEventListener("click", function () {
+
+            nav.classList.toggle("open");
+            menuButton.classList.toggle("open");
+
+        });
+
+    }
+
+
+    /* =====================================================
+       MAIN WEBSITE — FAQ
+    ===================================================== */
+
+    $$(".faq-question").forEach(function (question) {
+
+        question.addEventListener("click", function () {
 
             const item = question.closest(".faq-item");
 
             if (!item) return;
 
-            const alreadyOpen = item.classList.contains("open");
+            const wasOpen =
+                item.classList.contains("open");
 
-            document.querySelectorAll(".faq-item").forEach(other => {
+            $$(".faq-item").forEach(function (other) {
                 other.classList.remove("open");
             });
 
-            if (!alreadyOpen) {
+            if (!wasOpen) {
                 item.classList.add("open");
             }
+
         });
 
     });
 
 
     /* =====================================================
-       DIAGNOSTIC COUNTER
+       MAIN WEBSITE — COUNTERS
     ===================================================== */
 
-    document.querySelectorAll("[data-count]").forEach(element => {
+    $$("[data-count]").forEach(function (element) {
 
-        const target = Number(element.dataset.count);
+        const target =
+            Number(element.dataset.count);
 
         if (Number.isNaN(target)) return;
 
-        let current = 0;
         const duration = 1200;
         const start = performance.now();
+
 
         function animate(time) {
 
             const progress =
-                Math.min((time - start) / duration, 1);
+                Math.min(
+                    (time - start) / duration,
+                    1
+                );
 
-            current = Math.floor(target * progress);
+            element.textContent =
+                Math.floor(target * progress);
 
-            element.textContent = current;
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
@@ -77,21 +99,24 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+
         requestAnimationFrame(animate);
+
     });
 
 
     /* =====================================================
-       PERFORMANCE BARS
+       MAIN WEBSITE — PERFORMANCE BARS
     ===================================================== */
 
-    document.querySelectorAll("[data-width]").forEach(bar => {
+    $$("[data-width]").forEach(function (bar) {
 
-        const width = bar.dataset.width;
+        const width =
+            bar.dataset.width;
 
         if (!width) return;
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(function () {
             bar.style.width = width;
         });
 
@@ -99,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       TWEAK DATA
+       MAIN WEBSITE — TWEAK DATA
     ===================================================== */
 
     const tweakData = {
@@ -113,43 +138,43 @@ document.addEventListener("DOMContentLoaded", () => {
         "amd": {
             title: "AMD Optimization",
             description:
-                "A collection of safe AMD-focused recommendations for improving consistency and reducing unnecessary background overhead."
+                "AMD-focused recommendations for supported systems."
         },
 
         "intel": {
             title: "Intel Optimization",
             description:
-                "Intel-focused system recommendations designed for lower-end and integrated graphics systems."
+                "Intel-focused recommendations for supported systems."
         },
 
         "game-processor": {
             title: "Game Processor",
             description:
-                "Safe processor-related Windows adjustments intended to reduce unnecessary background activity."
+                "Processor-related Windows recommendations designed to reduce unnecessary background overhead."
         },
 
         "game-settings": {
             title: "Game User Settings",
             description:
-                "Recommended settings for creating a lower-overhead Fortnite configuration."
+                "Recommended Fortnite settings focused on reducing unnecessary overhead."
         },
 
         "stretched-res": {
             title: "Stretched Resolution",
             description:
-                "Information and setup guidance for using supported display resolutions. Results vary depending on your hardware and display."
+                "Information about supported display-resolution configurations. Results depend on your hardware and display."
         },
 
         "network": {
             title: "Network Optimization",
             description:
-                "Safe network recommendations focused on stability and consistency rather than claiming impossible zero latency."
+                "Safe network recommendations focused on stability and consistency."
         },
 
         "pc-checks": {
             title: "PC Checks",
             description:
-                "Use the ZYLO PC Check utility to inspect your Windows system before applying optimisations."
+                "Use the ZYLO PC Check utility to inspect your Windows system."
         },
 
         "basic": {
@@ -161,13 +186,13 @@ document.addEventListener("DOMContentLoaded", () => {
         "pro": {
             title: "Pro Tweaks",
             description:
-                "More advanced optimisation recommendations for users who understand the changes being applied."
+                "More advanced optimisation recommendations for users who understand the changes."
         },
 
         "extreme": {
             title: "Extreme Tweaks",
             description:
-                "Advanced system adjustments. Review every change before applying it and keep a backup available."
+                "Advanced system adjustments. Review changes before applying them."
         },
 
         "full-optimization": {
@@ -191,38 +216,51 @@ document.addEventListener("DOMContentLoaded", () => {
         "potato-pro": {
             title: "Potato Graphics Pro",
             description:
-                "A more aggressive low-end graphics configuration for systems where performance is the priority."
+                "A lower-overhead graphics configuration for weaker systems."
         }
 
     };
 
 
     /* =====================================================
-       TWEAK MODAL
+       MAIN WEBSITE — TWEAK MODAL
     ===================================================== */
 
-    const modal = document.querySelector("#tweak-modal");
-    const modalTitle = document.querySelector("#tweak-modal-title");
-    const modalBody = document.querySelector("#tweak-modal-body");
-    const modalClose = document.querySelector("#tweak-modal-close");
+    const modal =
+        $("#tweak-modal");
+
+    const modalTitle =
+        $("#tweak-modal-title");
+
+    const modalBody =
+        $("#tweak-modal-body");
+
+    const modalClose =
+        $("#tweak-modal-close");
 
 
     function openTweak(key) {
 
-        const data = tweakData[key];
+        const data =
+            tweakData[key];
 
         if (!data || !modal) return;
 
         if (modalTitle) {
-            modalTitle.textContent = data.title;
+            modalTitle.textContent =
+                data.title;
         }
 
         if (modalBody) {
-            modalBody.textContent = data.description;
+            modalBody.textContent =
+                data.description;
         }
 
         modal.classList.add("open");
-        document.body.classList.add("modal-open");
+
+        document.body.classList.add(
+            "modal-open"
+        );
     }
 
 
@@ -231,155 +269,918 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!modal) return;
 
         modal.classList.remove("open");
-        document.body.classList.remove("modal-open");
+
+        document.body.classList.remove(
+            "modal-open"
+        );
     }
 
 
     if (modalClose) {
-        modalClose.addEventListener("click", closeTweak);
+
+        modalClose.addEventListener(
+            "click",
+            closeTweak
+        );
+
     }
 
 
     if (modal) {
-        modal.addEventListener("click", event => {
 
-            if (event.target === modal) {
-                closeTweak();
+        modal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === modal) {
+                    closeTweak();
+                }
+
             }
+        );
 
-        });
     }
 
 
-    document.addEventListener("keydown", event => {
+    document.addEventListener(
+        "keydown",
+        function (event) {
 
-        if (event.key === "Escape") {
-            closeTweak();
+            if (event.key === "Escape") {
+                closeTweak();
+            }
+
         }
+    );
+
+
+    $$("[data-tweak]").forEach(function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                openTweak(
+                    button.dataset.tweak
+                );
+
+            }
+        );
 
     });
 
 
-    /* =====================================================
-       TWEAK BUTTONS
-    ===================================================== */
-
-    document.querySelectorAll("[data-tweak]").forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            const key = button.dataset.tweak;
-
-            openTweak(key);
-
-        });
-
-    });
+    window.zyloOpenTweak =
+        openTweak;
 
 
     /* =====================================================
-       GLOBAL TWEAK OPENER
-       Allows HTML buttons to call:
-       window.zyloOpenTweak("amd")
+       MAIN WEBSITE — TWEAK FINDER
     ===================================================== */
 
-    window.zyloOpenTweak = openTweak;
+    const finderInput =
+        $("#tweak-search");
 
-
-    /* =====================================================
-       TWEAK FINDER
-    ===================================================== */
-
-    const finder = document.querySelector("#tweak-finder");
-    const finderInput = document.querySelector("#tweak-search");
-    const finderResults = document.querySelector("#tweak-results");
+    const finderResults =
+        $("#tweak-results");
 
 
     if (finderInput && finderResults) {
 
-        finderInput.addEventListener("input", () => {
+        finderInput.addEventListener(
+            "input",
+            function () {
 
-            const search =
-                finderInput.value
-                    .trim()
-                    .toLowerCase();
-
-            const cards =
-                finderResults.querySelectorAll(
-                    "[data-tweak]"
-                );
-
-            cards.forEach(card => {
-
-                const key =
-                    (card.dataset.tweak || "")
+                const search =
+                    finderInput.value
+                        .trim()
                         .toLowerCase();
 
-                const text =
-                    card.textContent
-                        .toLowerCase();
 
-                const matches =
-                    !search ||
-                    key.includes(search) ||
-                    text.includes(search);
+                finderResults
+                    .querySelectorAll(
+                        "[data-tweak]"
+                    )
+                    .forEach(function (card) {
 
-                card.style.display =
-                    matches ? "" : "none";
-            });
+                        const key =
+                            (
+                                card.dataset.tweak ||
+                                ""
+                            ).toLowerCase();
 
-        });
+                        const text =
+                            card.textContent
+                                .toLowerCase();
+
+
+                        const matches =
+                            !search ||
+                            key.includes(search) ||
+                            text.includes(search);
+
+
+                        card.style.display =
+                            matches
+                                ? ""
+                                : "none";
+
+                    });
+
+            }
+        );
+
     }
 
 
     /* =====================================================
-       SMOOTH SCROLL
+       MAIN WEBSITE — SMOOTH LINKS
     ===================================================== */
 
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
+    document
+        .querySelectorAll(
+            'a[href^="#"]'
+        )
+        .forEach(function (link) {
 
-        link.addEventListener("click", event => {
+            link.addEventListener(
+                "click",
+                function (event) {
 
-            const id =
-                link.getAttribute("href");
+                    const id =
+                        link.getAttribute("href");
 
-            if (!id || id === "#") return;
+                    if (!id || id === "#") {
+                        return;
+                    }
 
-            const target =
-                document.querySelector(id);
+                    const target =
+                        document.querySelector(id);
 
-            if (!target) return;
+                    if (!target) return;
 
-            event.preventDefault();
+                    event.preventDefault();
 
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                }
+            );
 
         });
-
-    });
 
 
     /* =====================================================
-       CLOSE MOBILE NAV AFTER CLICK
+       DASHBOARD — DOWNLOADS
     ===================================================== */
 
-    document.querySelectorAll(".site-nav a").forEach(link => {
+    const DOWNLOADS = {
 
-        link.addEventListener("click", () => {
+        pcCheck:
+            "downloads/ZYLO_PC_CHECK.exe",
 
-            if (nav) {
-                nav.classList.remove("open");
-            }
+        networkCheck:
+            "downloads/ZYLO_NETWORK_CHECK.exe",
 
-            if (menuButton) {
-                menuButton.classList.remove("open");
-            }
+        optimiser:
+            "downloads/ZYLO_OPTIMISER.exe"
+
+    };
+
+
+    /* =====================================================
+       DASHBOARD — STATE
+    ===================================================== */
+
+    const dashboardState = {
+
+        pcCheck:
+            localStorage.getItem(
+                "zylo_pc_check"
+            ) === "complete",
+
+        networkCheck:
+            localStorage.getItem(
+                "zylo_network_check"
+            ) === "complete",
+
+        optimiserOpened: false,
+
+        potatoOpened: false,
+
+        downloadsOpened: false
+
+    };
+
+
+    /* =====================================================
+       DASHBOARD — DOWNLOAD FUNCTION
+    ===================================================== */
+
+    function downloadFile(
+        file,
+        name
+    ) {
+
+        const link =
+            document.createElement("a");
+
+        link.href = file;
+
+        link.download = name;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+    }
+
+
+    /* =====================================================
+       DASHBOARD — LAST SCAN
+    ===================================================== */
+
+    function saveLastScan() {
+
+        const date =
+            new Date();
+
+
+        const formatted =
+            date.toLocaleDateString(
+                undefined,
+                {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+
+        localStorage.setItem(
+            "zylo_last_scan",
+            formatted
+        );
+
+    }
+
+
+    /* =====================================================
+       DASHBOARD — STATUS
+    ===================================================== */
+
+    function updateDashboardStatus() {
+
+        const pcStatus =
+            $("#pc-status");
+
+
+        if (pcStatus) {
+
+            pcStatus.textContent =
+                dashboardState.pcCheck
+                    ? "CHECK COMPLETED"
+                    : "NOT SCANNED";
+
+
+            pcStatus.classList.toggle(
+                "complete",
+                dashboardState.pcCheck
+            );
+
+        }
+
+
+        const networkStatus =
+            $("#network-status");
+
+
+        if (networkStatus) {
+
+            networkStatus.textContent =
+                dashboardState.networkCheck
+                    ? "CHECK COMPLETED"
+                    : "NOT SCANNED";
+
+
+            networkStatus.classList.toggle(
+                "complete",
+                dashboardState.networkCheck
+            );
+
+        }
+
+
+        const lastScan =
+            $("#last-scan");
+
+
+        if (lastScan) {
+
+            const savedDate =
+                localStorage.getItem(
+                    "zylo_last_scan"
+                );
+
+
+            lastScan.textContent =
+                savedDate
+                    ? "Last scan: " + savedDate
+                    : "Last scan: Never";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       DASHBOARD — NAVIGATION
+    ===================================================== */
+
+    $$(".zylo-nav-btn")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const target =
+                        button.dataset.target;
+
+                    if (!target) return;
+
+                    showDashboardView(
+                        target
+                    );
+
+                }
+            );
 
         });
 
-    });
+
+    function showDashboardView(id) {
+
+        $$(".zylo-view")
+            .forEach(function (view) {
+
+                view.classList.remove(
+                    "active"
+                );
+
+            });
+
+
+        $$(".zylo-nav-btn")
+            .forEach(function (button) {
+
+                button.classList.remove(
+                    "active"
+                );
+
+            });
+
+
+        const view =
+            document.getElementById(id);
+
+
+        if (view) {
+
+            view.classList.add(
+                "active"
+            );
+
+        }
+
+
+        const button =
+            document.querySelector(
+                '.zylo-nav-btn[data-target="' +
+                id +
+                '"]'
+            );
+
+
+        if (button) {
+
+            button.classList.add(
+                "active"
+            );
+
+        }
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* =====================================================
+       DASHBOARD — PC CHECK
+    ===================================================== */
+
+    $$("[data-action='pc-check']")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    button.disabled = true;
+
+                    button.textContent =
+                        "Preparing PC Check...";
+
+
+                    setTimeout(
+                        function () {
+
+                            downloadFile(
+                                DOWNLOADS.pcCheck,
+                                "ZYLO_PC_CHECK.exe"
+                            );
+
+
+                            dashboardState.pcCheck =
+                                true;
+
+
+                            localStorage.setItem(
+                                "zylo_pc_check",
+                                "complete"
+                            );
+
+
+                            saveLastScan();
+
+                            updateDashboardStatus();
+
+
+                            button.disabled =
+                                false;
+
+
+                            button.textContent =
+                                "Download PC Check";
+
+                        },
+                        500
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       DASHBOARD — NETWORK CHECK
+    ===================================================== */
+
+    $$("[data-action='network-check']")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    button.disabled = true;
+
+                    button.textContent =
+                        "Preparing Network Check...";
+
+
+                    setTimeout(
+                        function () {
+
+                            downloadFile(
+                                DOWNLOADS.networkCheck,
+                                "ZYLO_NETWORK_CHECK.exe"
+                            );
+
+
+                            dashboardState.networkCheck =
+                                true;
+
+
+                            localStorage.setItem(
+                                "zylo_network_check",
+                                "complete"
+                            );
+
+
+                            saveLastScan();
+
+                            updateDashboardStatus();
+
+
+                            button.disabled =
+                                false;
+
+
+                            button.textContent =
+                                "Download Network Check";
+
+                        },
+                        500
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       DASHBOARD — OPTIMISER
+    ===================================================== */
+
+    $$("[data-action='optimiser']")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    dashboardState.optimiserOpened =
+                        true;
+
+
+                    const panel =
+                        $("#optimiser-panel");
+
+
+                    if (panel) {
+
+                        panel.classList.add(
+                            "open"
+                        );
+
+
+                        panel.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+
+                    }
+                    else {
+
+                        showDashboardView(
+                            "optimiser"
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       DASHBOARD — OPTIMISER DOWNLOAD
+    ===================================================== */
+
+    $$("[data-action='download-optimiser']")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    downloadFile(
+                        DOWNLOADS.optimiser,
+                        "ZYLO_OPTIMISER.exe"
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       DASHBOARD — POTATO MODE
+    ===================================================== */
+
+    $$("[data-action='potato']")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    dashboardState.potatoOpened =
+                        true;
+
+
+                    localStorage.setItem(
+                        "zylo_potato_opened",
+                        "true"
+                    );
+
+
+                    showDashboardView(
+                        "potato"
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       DASHBOARD — DOWNLOADS
+    ===================================================== */
+
+    $$("[data-action='downloads']")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    dashboardState.downloadsOpened =
+                        true;
+
+
+                    localStorage.setItem(
+                        "zylo_downloads_opened",
+                        "true"
+                    );
+
+
+                    showDashboardView(
+                        "downloads"
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       DASHBOARD — GUIDED TOUR
+    ===================================================== */
+
+    const tourSteps = [
+
+        {
+            target: "tour-pc",
+            title: "PC Check",
+            text:
+                "Start here to check your Windows setup."
+        },
+
+        {
+            target: "tour-network",
+            title: "Network Check",
+            text:
+                "Check your connection and network information."
+        },
+
+        {
+            target: "tour-optimizer",
+            title: "Optimiser",
+            text:
+                "Open your ZYLO optimisation tools here."
+        },
+
+        {
+            target: "tour-potato",
+            title: "Potato Mode",
+            text:
+                "Find lower-overhead settings for weaker PCs."
+        },
+
+        {
+            target: "tour-downloads",
+            title: "Downloads",
+            text:
+                "Your ZYLO utilities and tools will appear here."
+        },
+
+        {
+            target: "tour-premium",
+            title: "Premium",
+            text:
+                "Access your premium ZYLO features here."
+        },
+
+        {
+            target: "tour-account",
+            title: "Account",
+            text:
+                "Your verified account information appears here."
+        }
+
+    ];
+
+
+    let tourIndex = 0;
+
+
+    const tourOverlay =
+        $("#tour-overlay");
+
+    const tourTitle =
+        $("#tour-title");
+
+    const tourText =
+        $("#tour-text");
+
+    const tourNext =
+        $("#tour-next");
+
+    const tourSkip =
+        $("#tour-skip");
+
+    const tourReplay =
+        $("#tour-replay");
+
+
+    function showTourStep() {
+
+        const step =
+            tourSteps[tourIndex];
+
+
+        if (!step) return;
+
+
+        $$(".tour-highlight")
+            .forEach(function (element) {
+
+                element.classList.remove(
+                    "tour-highlight"
+                );
+
+            });
+
+
+        const target =
+            document.getElementById(
+                step.target
+            );
+
+
+        if (target) {
+
+            target.classList.add(
+                "tour-highlight"
+            );
+
+        }
+
+
+        if (tourTitle) {
+
+            tourTitle.textContent =
+                step.title;
+
+        }
+
+
+        if (tourText) {
+
+            tourText.textContent =
+                step.text;
+
+        }
+
+
+        if (tourNext) {
+
+            tourNext.textContent =
+                tourIndex ===
+                tourSteps.length - 1
+                    ? "Finish"
+                    : "Next";
+
+        }
+
+    }
+
+
+    function startTour() {
+
+        if (!tourOverlay) return;
+
+        tourIndex = 0;
+
+        tourOverlay.classList.add(
+            "active"
+        );
+
+        showTourStep();
+
+    }
+
+
+    function finishTour() {
+
+        if (tourOverlay) {
+
+            tourOverlay.classList.remove(
+                "active"
+            );
+
+        }
+
+
+        $$(".tour-highlight")
+            .forEach(function (element) {
+
+                element.classList.remove(
+                    "tour-highlight"
+                );
+
+            });
+
+
+        localStorage.setItem(
+            "zyloTourDone",
+            "true"
+        );
+
+    }
+
+
+    if (tourNext) {
+
+        tourNext.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    tourIndex >=
+                    tourSteps.length - 1
+                ) {
+
+                    finishTour();
+
+                    return;
+
+                }
+
+
+                tourIndex++;
+
+                showTourStep();
+
+            }
+        );
+
+    }
+
+
+    if (tourSkip) {
+
+        tourSkip.addEventListener(
+            "click",
+            finishTour
+        );
+
+    }
+
+
+    if (tourReplay) {
+
+        tourReplay.addEventListener(
+            "click",
+            startTour
+        );
+
+    }
+
+
+    /* =====================================================
+       INITIALISE DASHBOARD
+    ===================================================== */
+
+    updateDashboardStatus();
+
+
+    if (
+        $("#tour-overlay") &&
+        !localStorage.getItem("zyloTourDone")
+    ) {
+
+        setTimeout(
+            startTour,
+            1000
+        );
+
+    }
 
 });
