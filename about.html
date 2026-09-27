@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About — ZYLO TWEAKS</title>
+<meta name="description" content="Why ZYLO TWEAKS exists and what it's built on — free, honest Fortnite PC settings guides.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07090b; --bg-alt: #0b0e11; --surface: #11151a; --surface-2: #171c22;
+    --border: #262d34; --text: #edf1f3; --text-dim: #93a0a8; --text-faint: #5d6970;
+    --accent: #3ecfe0; --accent-soft: #3ecfe01c; --accent-dim: #2ba3b3;
+    --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  h1, h2 { font-family: var(--font-display); font-weight: 600; margin: 0; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    position: sticky; top: 0; z-index: 10;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: 16px;
+    background: rgba(7,9,11,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav { max-width: 1160px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; text-decoration: none; }
+  .logo svg { color: var(--accent); }
+  .nav-icons { display: flex; align-items: center; gap: 10px; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 8px;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+    display: grid; place-items: center; text-decoration: none;
+  }
+  .icon-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
+  .btn-ghost {
+    background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+    padding: 9px 16px; border-radius: 8px; font-size: 0.85rem; text-decoration: none;
+  }
+  .btn-ghost:hover { border-color: var(--accent-dim); }
+
+  main { padding: 56px 0 80px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 14px; }
+  h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin-bottom: 28px; line-height: 1.15; }
+  .lede { color: var(--text-dim); font-size: 1.08rem; margin-bottom: 40px; }
+
+  h2 { font-size: 1.25rem; margin-top: 40px; margin-bottom: 14px; }
+  p { color: var(--text-dim); font-size: 0.98rem; margin: 0 0 16px; }
+  p strong { color: var(--text); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px 24px; margin: 24px 0;
+  }
+  .card p:last-child { margin-bottom: 0; }
+
+  ul { padding-left: 20px; color: var(--text-dim); font-size: 0.95rem; }
+  li { margin-bottom: 8px; }
+
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 36px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #06181c; font-weight: 600; padding: 12px 22px; border-radius: 8px; text-decoration: none; font-size: 0.92rem; }
+  .btn:hover { background: #57dcec; }
+
+  footer { padding: 32px 0; text-align: center; color: var(--text-faint); font-size: 0.82rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 24 24" width="20" height="20"><rect x="2" y="12" width="3" height="8" rx="1" fill="currentColor"/><rect x="8" y="6" width="3" height="14" rx="1" fill="currentColor"/><rect x="14" y="2" width="3" height="18" rx="1" fill="currentColor"/><rect x="20" y="9" width="3" height="11" rx="1" fill="currentColor"/></svg>
+      ZYLO TWEAKS
+    </a>
+    <div class="nav-icons">
+      <a href="https://discord.gg/zAaH8uxAG" class="icon-btn" aria-label="Discord" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 5.6a16.6 16.6 0 0 0-4-1.2l-.2.4a11.7 11.7 0 0 1 3.5 1.3 13.9 13.9 0 0 0-13.6 0 11.7 11.7 0 0 1 3.5-1.3l-.2-.4a16.6 16.6 0 0 0-4 1.2C2.2 8.6 1.5 11.6 1.7 14.5a16.7 16.7 0 0 0 5 2.6l.6-1a10.8 10.8 0 0 1-1.7-.9l.4-.3a12 12 0 0 0 10 0l.4.3a10.8 10.8 0 0 1-1.7.9l.6 1a16.7 16.7 0 0 0 5-2.6c.4-3.3-.4-6.3-2.3-8.9zM8.7 13.3c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.4.7 1.3 1.5c0 .8-.6 1.5-1.3 1.5zm6.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg>
+      </a>
+      <a href="index.html" class="btn-ghost">← Back to site</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="eyebrow">ABOUT</div>
+  <h1>Why ZYLO TWEAKS exists</h1>
+  <p class="lede">Started because Fortnite ran badly on a normal PC, and most guides online either did nothing or asked you to run something you couldn't verify.</p>
+
+  <h2>What this actually is</h2>
+  <p>ZYLO TWEAKS is a set of free, written guides for improving Fortnite performance on Windows — covering low-end hardware, AMD, Intel, and Nvidia setups, network settings, and general Windows tuning. Every guide is plain steps you follow yourself, in Fortnite's own settings menu or Windows Settings.</p>
+
+  <div class="card">
+    <p><strong>No downloads. No scripts. No admin rights required.</strong> Anything that changes settings on its own has to run as a program on your PC, and that comes with real risk if you don't know exactly what it's doing. Keeping everything as guides means you can see the change before you make it, and undo it just as easily.</p>
+  </div>
+
+  <h2>What it isn't</h2>
+  <ul>
+    <li>No cheats, ESP, aimbots, or anti-cheat bypasses</li>
+    <li>No guaranteed FPS numbers — results depend on your own hardware</li>
+    <li>No paid tiers that don't exist yet, and no fake "Pro" upgrade</li>
+  </ul>
+
+  <h2>What's next</h2>
+  <p>More guides get added as they're written and tested. The <a href="dashboard.html" style="color:var(--accent);">Tracker</a> page lets you check off what you've applied so far, and the Discord is the place to ask questions or suggest what to cover next.</p>
+
+  <div class="cta-row">
+    <a href="index.html#tweaks" class="btn">See all guides</a>
+    <a href="https://discord.gg/zAaH8uxAG" class="btn-ghost" target="_blank" rel="noopener" style="padding:12px 22px;">Join Discord</a>
+  </div>
+</main>
+
+<footer>
+  ZYLO TWEAKS · <a href="index.html">Home</a> · <a href="https://discord.gg/zAaH8uxAG">Discord</a>
+</footer>
+
+</body>
+</html>
