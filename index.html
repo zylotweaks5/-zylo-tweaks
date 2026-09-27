@@ -76,6 +76,7 @@
         <div class="hero-actions">
           <a href="#tweaks" class="btn btn-primary">Explore services</a>
           <a href="https://discord.gg/zAaH8uxAG" class="btn btn-secondary" target="_blank" rel="noopener">Try for free</a>
+          <a href="dashboard.html" class="btn btn-text">My tracker →</a>
         </div>
 
         <ul class="trust-bar">
@@ -765,9 +766,9 @@
 
 <!-- ===== TWEAK GUIDE MODAL ===== -->
 <div class="tweak-modal" id="tweak-modal" aria-hidden="true">
-  <div class="tweak-modal-backdrop" data-close-modal></div>
+  <div class="tweak-modal-backdrop" data-close-modal onclick="window.zyloCloseTweak && window.zyloCloseTweak()"></div>
   <div class="tweak-modal-panel" role="dialog" aria-modal="true" aria-labelledby="tweak-modal-title">
-    <button class="tweak-modal-close" data-close-modal aria-label="Close">✕</button>
+    <button class="tweak-modal-close" data-close-modal onclick="window.zyloCloseTweak && window.zyloCloseTweak()" aria-label="Close">✕</button>
     <div class="tweak-modal-body" id="tweak-modal-body">
       <!-- filled by script.js -->
     </div>

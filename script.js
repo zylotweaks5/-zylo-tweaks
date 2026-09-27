@@ -400,6 +400,9 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.style.overflow = '';
   }
 
+  // Global fallback, same pattern as window.zyloOpenTweak
+  window.zyloCloseTweak = closeTweakModal;
+
   document.querySelectorAll('[data-open-tweak]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       openTweakModal(btn.getAttribute('data-open-tweak'));

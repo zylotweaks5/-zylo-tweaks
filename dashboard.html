@@ -103,8 +103,24 @@
   footer { padding: 32px 0; text-align: center; color: var(--text-faint); font-size: 0.82rem; }
   footer a { color: var(--text-dim); }
 
+  .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 40px; height: 40px; background: none; border: none; cursor: pointer; }
+  .hamburger span { height: 2px; width: 100%; background: var(--text); border-radius: 2px; transition: transform 0.2s ease, opacity 0.2s ease; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
   @media (max-width: 760px) {
-    nav.links { display: none; }
+    nav.links {
+      position: fixed; top: 62px; left: 0; right: 0;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      flex-direction: column; gap: 0; padding: 8px 24px 20px;
+      transform: translateY(-12px); opacity: 0; pointer-events: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    nav.links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    nav.links a { display: block; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .hamburger { display: flex; }
+    .nav > .btn-ghost { display: none; }
     .hero-grid { grid-template-columns: 1fr; }
     .tweak-list { grid-template-columns: 1fr; }
     section { padding: 44px 0; }
@@ -121,13 +137,16 @@
       <svg viewBox="0 0 24 24" width="20" height="20"><rect x="2" y="12" width="3" height="8" rx="1" fill="currentColor"/><rect x="8" y="6" width="3" height="14" rx="1" fill="currentColor"/><rect x="14" y="2" width="3" height="18" rx="1" fill="currentColor"/><rect x="20" y="9" width="3" height="11" rx="1" fill="currentColor"/></svg>
       ZYLO TWEAKS
     </a>
-    <nav class="links">
+    <nav class="links" id="nav-links">
       <a href="index.html#tweaks">All guides</a>
       <a href="#tracker">Tracker</a>
       <a href="index.html#faq">FAQ</a>
       <a href="https://discord.gg/zAaH8uxAG">Discord</a>
     </nav>
     <a class="btn btn-ghost" href="index.html">← Back to site</a>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
@@ -177,6 +196,22 @@
 </footer>
 
 <script>
+  var hamburger = document.getElementById('hamburger');
+  var navLinksEl = document.getElementById('nav-links');
+  if (hamburger && navLinksEl) {
+    hamburger.addEventListener('click', function () {
+      var isOpen = navLinksEl.classList.toggle('open');
+      hamburger.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    navLinksEl.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        navLinksEl.classList.remove('open');
+        hamburger.classList.remove('open');
+      });
+    });
+  }
+
   var tweaks = [
     { id: 'low-end', name: 'Potato / Low-End Preset', desc: 'Trims visual and background overhead for weaker hardware.' },
     { id: 'amd', name: 'AMD Optimization', desc: 'Driver and power settings for Ryzen + Radeon.' },
