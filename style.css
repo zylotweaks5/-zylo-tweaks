@@ -123,32 +123,12 @@ code {
 }
 .btn-solid:hover { background: #ffffff; }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--text);
-  border-color: var(--border);
-  padding: 10px 20px;
-  font-size: 0.9rem;
-}
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-
 .btn-text {
   background: transparent;
   color: var(--text-dim);
   padding: 13px 6px;
 }
 .btn-text:hover { color: var(--accent); }
-
-.btn-download {
-  width: 100%;
-  justify-content: center;
-  background: var(--surface-2);
-  color: var(--text-faint);
-  border-color: var(--border);
-  cursor: not-allowed;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-}
 
 .btn-download-live {
   width: 100%;
