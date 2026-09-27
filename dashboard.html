@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZYLO TWEAKS — Your Tracker</title>
+<meta name="description" content="Track which ZYLO TWEAKS guides you've applied yourself. No installs, no scripts — just your own checklist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07090b;
+    --bg-alt: #0b0e11;
+    --surface: #11151a;
+    --surface-2: #171c22;
+    --border: #262d34;
+    --text: #edf1f3;
+    --text-dim: #93a0a8;
+    --text-faint: #5d6970;
+    --accent: #3ecfe0;
+    --accent-soft: #3ecfe01c;
+    --accent-dim: #2ba3b3;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; margin: 0; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    position: sticky; top: 0; z-index: 10;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: 16px;
+    background: rgba(7,9,11,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; }
+  .logo svg { color: var(--accent); }
+  nav.links { display: flex; gap: 24px; font-size: 0.9rem; color: var(--text-dim); }
+  nav.links a { text-decoration: none; }
+  nav.links a:hover { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #06181c; font-weight: 600;
+    padding: 11px 20px; border-radius: 8px; text-decoration: none;
+    font-size: 0.9rem; border: none; cursor: pointer;
+  }
+  .btn:hover { background: #57dcec; }
+  .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent-dim); }
+
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  .hero { padding-top: 56px; padding-bottom: 56px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(2rem, 4.4vw, 2.9rem); line-height: 1.08; }
+  .hero p.lead { color: var(--text-dim); font-size: 1.02rem; max-width: 46ch; margin: 18px 0 28px; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .readout { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  .readout-title { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 16px; }
+  .readout-big { font-family: var(--font-display); font-size: 2.6rem; font-weight: 700; color: var(--accent); }
+  .readout-big span { font-size: 1.1rem; color: var(--text-dim); font-weight: 400; }
+  .readout-bar-track { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 14px 0 18px; }
+  .readout-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 999px; transition: width 0.4s ease; }
+  .readout-note { color: var(--text-faint); font-size: 0.8rem; }
+
+  .section-head { max-width: 56ch; margin-bottom: 36px; }
+  .section-head h2 { font-size: 1.7rem; }
+  .section-head p { color: var(--text-dim); margin-top: 10px; }
+
+  .tweak-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .tweak { background: var(--surface); padding: 20px; cursor: pointer; transition: background 0.15s ease; }
+  .tweak:hover { background: var(--surface-2); }
+  .tweak-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+  .tweak-top h3 { font-family: var(--font-body); font-weight: 600; font-size: 0.98rem; }
+  .checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; display: grid; place-items: center; font-size: 0.8rem; color: transparent; }
+  .checkbox.checked { background: var(--accent); border-color: var(--accent); color: #06181c; }
+  .tweak p { color: var(--text-dim); font-size: 0.86rem; margin: 0 0 10px; }
+  .tweak-link { font-size: 0.8rem; color: var(--accent); text-decoration: none; }
+
+  .note-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; color: var(--text-dim); font-size: 0.9rem; }
+  .note-box strong { color: var(--text); }
+
+  footer { padding: 32px 0; text-align: center; color: var(--text-faint); font-size: 0.82rem; }
+  footer a { color: var(--text-dim); }
+
+  @media (max-width: 760px) {
+    nav.links { display: none; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .tweak-list { grid-template-columns: 1fr; }
+    section { padding: 44px 0; }
+  }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="logo" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" width="20" height="20"><rect x="2" y="12" width="3" height="8" rx="1" fill="currentColor"/><rect x="8" y="6" width="3" height="14" rx="1" fill="currentColor"/><rect x="14" y="2" width="3" height="18" rx="1" fill="currentColor"/><rect x="20" y="9" width="3" height="11" rx="1" fill="currentColor"/></svg>
+      ZYLO TWEAKS
+    </a>
+    <nav class="links">
+      <a href="index.html#tweaks">All guides</a>
+      <a href="#tracker">Tracker</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="https://discord.gg/zAaH8uxAG">Discord</a>
+    </nav>
+    <a class="btn btn-ghost" href="index.html">← Back to site</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Track your own progress, tweak by tweak.</h1>
+      <p class="lead">This isn't a tool that changes your PC for you — it's a personal checklist. Tick off each guide once you've actually applied it yourself, and your progress is saved right here on this device.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#tracker">Start tracking</a>
+        <a class="btn btn-ghost" href="index.html#tweaks">Read the guides first</a>
+      </div>
+    </div>
+    <div class="readout">
+      <div class="readout-title">YOUR PROGRESS</div>
+      <div class="readout-big" id="progress-count">0<span> / 15 applied</span></div>
+      <div class="readout-bar-track"><div class="readout-bar-fill" id="progress-bar"></div></div>
+      <div class="readout-note">Saved to this browser only — nothing is sent anywhere, and no account is needed.</div>
+    </div>
+  </div>
+</section>
+
+<section id="tracker">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Check off what you've applied</h2>
+      <p>Tap a card once you've actually made that change yourself. Not sure how? Tap "How do I do this?" to jump to the full written guide.</p>
+    </div>
+    <div class="tweak-list" id="tweak-list">
+      <!-- populated by script below -->
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="note-box">
+      <strong>Why a checklist instead of a one-click tool?</strong> Anything that actually changes Windows settings, the registry, or game files on its own needs to run as a program on your PC — and that comes with real risk if you don't fully trust where it came from. ZYLO TWEAKS keeps everything as plain instructions you can read, understand, and reverse yourself. Slower, but nothing hidden.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ZYLO TWEAKS · <a href="index.html">Home</a> · <a href="https://discord.gg/zAaH8uxAG">Discord</a>
+  </div>
+</footer>
+
+<script>
+  var tweaks = [
+    { id: 'low-end', name: 'Potato / Low-End Preset', desc: 'Trims visual and background overhead for weaker hardware.' },
+    { id: 'amd', name: 'AMD Optimization', desc: 'Driver and power settings for Ryzen + Radeon.' },
+    { id: 'intel', name: 'Intel Optimization', desc: 'Power and thread settings for Intel CPUs.' },
+    { id: 'nvidia', name: 'Nvidia Pack', desc: 'Control Panel settings for GeForce GPUs.' },
+    { id: 'game-processor', name: 'Game Processor', desc: 'Sets Fortnite to High priority each session.' },
+    { id: 'game-settings', name: 'Game User Settings', desc: 'A steady-frames-first settings baseline.' },
+    { id: 'network', name: 'Network Optimization', desc: 'Cuts background network chatter and jitter.' },
+    { id: 'pc-checks', name: 'PC Checks', desc: 'Startup apps, storage, and driver updates.' },
+    { id: 'stretched-res', name: 'Stretched Resolution', desc: 'Classic stretched aspect ratio setup.' },
+    { id: 'basic', name: 'Basic Tweaks', desc: 'The starting bundle — quick wins.' },
+    { id: 'pro', name: 'Pro Tweaks', desc: 'Basic Tweaks plus priority and network.' },
+    { id: 'extreme', name: 'Extreme Tweaks', desc: 'Every overhead cut pushed further.' },
+    { id: 'full-optimization', name: 'Full Optimization', desc: 'Every guide, done in one sitting.' },
+    { id: 'zero-delay', name: '0 Delay — No FPS Drop', desc: 'Network + priority combo for input delay.' },
+    { id: 'potato-pro', name: 'Potato Graphics Pro', desc: 'Beyond the base Potato preset.' }
+  ];
+
+  var STORAGE_KEY = 'zylo-tracker-v1';
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      // storage unavailable — progress just won't persist this session
+    }
+  }
+
+  var state = loadState();
+  var list = document.getElementById('tweak-list');
+  var progressCount = document.getElementById('progress-count');
+  var progressBar = document.getElementById('progress-bar');
+
+  function updateProgress() {
+    var done = tweaks.filter(function (t) { return state[t.id]; }).length;
+    progressCount.innerHTML = done + '<span> / ' + tweaks.length + ' applied</span>';
+    progressBar.style.width = Math.round((done / tweaks.length) * 100) + '%';
+  }
+
+  tweaks.forEach(function (t) {
+    var card = document.createElement('div');
+    card.className = 'tweak';
+
+    var checked = !!state[t.id];
+
+    card.innerHTML =
+      '<div class="tweak-top">' +
+        '<h3>' + t.name + '</h3>' +
+        '<div class="checkbox' + (checked ? ' checked' : '') + '" data-id="' + t.id + '">' + (checked ? '✓' : '') + '</div>' +
+      '</div>' +
+      '<p>' + t.desc + '</p>' +
+      '<a class="tweak-link" href="index.html?tweak=' + t.id + '#tweaks">How do I do this? →</a>';
+
+    var box = card.querySelector('.checkbox');
+    box.addEventListener('click', function (e) {
+      e.stopPropagation();
+      state[t.id] = !state[t.id];
+      saveState(state);
+      box.classList.toggle('checked');
+      box.textContent = state[t.id] ? '✓' : '';
+      updateProgress();
+    });
+
+    card.addEventListener('click', function () {
+      box.click();
+    });
+
+    list.appendChild(card);
+  });
+
+  updateProgress();
+</script>
+
+</body>
+</html>
