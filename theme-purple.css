@@ -32,3 +32,42 @@ body{background:radial-gradient(900px 520px at 50% -120px,#3b1a6b66,transparent)
 .tweak-empty{text-align:center;color:var(--text-dim);padding:28px;grid-column:1/-1}
 .tweak-count{color:var(--text-dim);font-size:.9rem;margin:0 0 12px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ===== More menu (mega menu) ===== */
+.more-btn{background:none;border:0;color:var(--text-dim);font:inherit;font-size:.88rem;padding:8px 13px;border-radius:999px;cursor:pointer}
+.more-btn:hover,.more-btn[aria-expanded="true"]{color:var(--text);background:var(--surface-2)}
+.mega{position:absolute;top:100%;left:0;right:0;background:rgba(13,10,20,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);max-height:75vh;overflow:auto}
+.mega[hidden]{display:none}
+.mega-in{max-width:var(--max-width);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;padding:0 24px}
+.mega-col{padding:18px 0 24px}.mega-col+.mega-col{border-left:1px solid var(--border);padding-left:32px}
+.mega-h{color:var(--text-faint);font-size:.9rem;padding-bottom:14px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.mega-item{display:block;width:100%;text-align:left;background:none;border:0;color:var(--text);font:inherit;padding:12px 0;cursor:pointer}
+.mega-item b{display:flex;justify-content:space-between;font-weight:600}.mega-item small{display:block;color:var(--text-dim);font-size:.85rem;margin-top:2px}
+.mega-item:hover b{color:var(--accent)}
+@media(max-width:700px){.mega-in{grid-template-columns:1fr}.mega-col+.mega-col{border-left:0;padding-left:0;border-top:1px solid var(--border)}}
+
+/* ===== Support cards ===== */
+.sup{max-width:640px;margin:0 auto;text-align:left}
+.sup h2{font-size:clamp(2rem,6vw,3rem);margin-bottom:12px}.sup>p{color:var(--text-dim);margin-bottom:24px}
+.sup-card{background:linear-gradient(160deg,var(--surface),#150e20);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px}
+.sup-card h3{font-size:1rem;color:var(--text-dim);font-weight:500;margin-bottom:8px}.sup-card p{color:var(--text-dim);font-size:.95rem;margin-bottom:16px}
+.sup-card .btn{width:100%;justify-content:center;border:0;cursor:pointer;font:inherit;font-weight:700}
+
+/* ===== ZYLO helper chat ===== */
+.zh-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:200;background:var(--accent-dim);color:#fff;border:0;border-radius:999px;padding:14px 20px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 8px 30px #9333ea66}
+.zh-fab:hover{background:var(--accent)}
+.zh{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:210;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100vh - 32px));background:var(--surface);border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px #000a}
+.zh[hidden]{display:none}
+.zh-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700}
+.zh-top button{background:none;border:0;color:var(--text-dim);font-size:1.1rem;cursor:pointer}
+.zh-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.zh-m{max-width:88%;padding:10px 14px;border-radius:16px;font-size:.92rem;line-height:1.45;white-space:pre-wrap}
+.zh-b{background:var(--surface-2);align-self:flex-start;border-bottom-left-radius:4px}
+.zh-u{background:var(--accent-dim);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.zh-acts{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start}
+.zh-acts button,.zh-chips button{background:transparent;color:var(--text);border:1px solid var(--accent-dim);border-radius:999px;padding:7px 12px;font:inherit;font-size:.82rem;cursor:pointer}
+.zh-acts button:hover,.zh-chips button:hover{background:var(--accent-soft)}
+.zh-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.zh-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border)}
+.zh-form input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 14px;font:inherit}
+.zh-form button{background:var(--accent-dim);color:#fff;border:0;border-radius:12px;padding:0 16px;font:inherit;font-weight:700;cursor:pointer}
