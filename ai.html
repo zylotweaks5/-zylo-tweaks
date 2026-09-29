@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZYLO AI</title>
+<style>
+:root{--bg:#0b0912;--side:#100d19;--card:#171224;--card2:#1f1830;--line:#2e2444;--text:#f1edf8;--dim:#a094b8;--acc:#a855f7;--acc2:#8b3fe0;--err:#f47280;
+box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+:root[data-theme="light"]{--bg:#faf8fe;--side:#f1ecfa;--card:#fff;--card2:#efe8fb;--line:#dcd0f0;--text:#1c1330;--dim:#6d5f88}
+@media(prefers-color-scheme:light){:root[data-theme="system"]{--bg:#faf8fe;--side:#f1ecfa;--card:#fff;--card2:#efe8fb;--line:#dcd0f0;--text:#1c1330;--dim:#6d5f88}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);display:flex;overflow:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
+.side{width:280px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;transition:transform .25s;flex:none}
+.brand{display:flex;align-items:center;justify-content:space-between;padding:16px;font-weight:700;letter-spacing:.02em}
+.brand span{background:linear-gradient(90deg,var(--acc),#6ee7f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ib{background:none;border:0;color:var(--dim);border-radius:8px;padding:6px 8px}.ib:hover{background:var(--card2);color:var(--text)}
+.new{margin:0 12px 10px;background:var(--acc2);color:#fff;border:0;border-radius:12px;padding:11px;font-weight:600}.new:hover{background:var(--acc)}
+.sq{margin:0 12px 8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:auto}
+.list{flex:1;overflow:auto;padding:4px 8px}
+.ci{display:flex;align-items:center;gap:4px;border-radius:10px;padding:2px 4px 2px 10px}.ci:hover,.ci.on{background:var(--card2)}
+.ci .t{flex:1;min-width:0;background:none;border:0;text-align:left;padding:9px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.92rem}
+.ci .ib{opacity:0;font-size:.8rem}.ci:hover .ib,.ci.on .ib{opacity:1}
+.foot{padding:12px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--dim)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.top .menu{display:none}.sp{flex:1}
+.banner{font-size:.78rem;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.banner b{color:var(--err)}.banner.ok b{color:#5eead4}
+.chat{flex:1;overflow:auto;padding:24px 16px}.wrap{max-width:760px;margin:0 auto}
+.welcome{text-align:center;padding:9vh 0 20px}.welcome h1{font-size:clamp(2rem,6vw,3rem);margin:0 0 8px}
+.welcome h1 span{background:linear-gradient(90deg,var(--acc),#6ee7f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.welcome p{color:var(--dim);margin:0 0 26px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
+.sg button{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--text)}.sg button:hover{border-color:var(--acc)}
+.sg small{display:block;color:var(--dim);margin-top:3px}
+.m{margin-bottom:22px;animation:in .2s ease}@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.m.u .b{background:var(--card2);border-radius:18px 18px 4px 18px;margin-left:auto;max-width:85%;width:fit-content}
+.b{padding:12px 16px;line-height:1.6;overflow-wrap:anywhere}.m.a .b{padding-left:0}
+.b p{margin:0 0 10px}.b code{background:var(--card2);border-radius:5px;padding:1px 6px;font-size:.9em}
+.cb{background:#0a0812;border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden}
+:root[data-theme="light"] .cb{background:#1c1330;color:#f1edf8}
+.cb .h{display:flex;justify-content:space-between;padding:6px 12px;font-size:.75rem;color:#a094b8;border-bottom:1px solid var(--line)}
+.cb .h button{background:none;border:0;color:#a094b8}.cb pre{margin:0;padding:12px;overflow-x:auto;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace;color:#f1edf8}
+.acts{display:flex;gap:2px;margin-top:2px}.acts .ib{font-size:.8rem}
+.err{border:1px solid var(--err);border-radius:12px;padding:12px 14px;color:var(--err);font-size:.92rem}
+.err button{margin-left:8px;background:none;border:1px solid var(--err);border-radius:8px;color:var(--err);padding:3px 10px}
+.dots span{display:inline-block;width:6px;height:6px;margin-right:4px;border-radius:50%;background:var(--dim);animation:p 1s infinite}.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes p{50%{opacity:.2}}
+.comp{padding:8px 16px 14px}.box{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:10px 12px}
+.box:focus-within{border-color:var(--acc)}
+.box textarea{width:100%;background:none;border:0;outline:0;resize:none;max-height:200px;padding:6px 4px;font-size:1rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:var(--card2);border-radius:10px;padding:5px 10px;font-size:.78rem;display:flex;gap:8px;align-items:center}
+.chip button{background:none;border:0;color:var(--dim)}
+.bar{display:flex;align-items:center;gap:6px}.bar select{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:.82rem}
+.send{background:var(--acc2);border:0;color:#fff;border-radius:50%;width:38px;height:38px;font-weight:700}.send:hover{background:var(--acc)}.send.stop{background:var(--err)}
+.hint{text-align:center;color:var(--dim);font-size:.72rem;margin-top:8px}
+dialog{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(400px,92vw)}dialog::backdrop{background:#000a}
+dialog h3{margin:0 0 14px}dialog label{display:block;margin:12px 0 4px;color:var(--dim);font-size:.85rem}dialog select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px}
+.sc{display:none}
+@media(max-width:800px){.side{position:fixed;inset:0 auto 0 0;z-index:30;transform:translateX(-100%);width:min(300px,86vw);padding-top:env(safe-area-inset-top,0px)}.side.open{transform:none}
+.sc.on{display:block;position:fixed;inset:0;background:#0008;z-index:20}.top .menu{display:block}.sg{grid-template-columns:1fr}.ci .ib{opacity:1}}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<aside class="side" id="side">
+  <div class="brand"><span>⚡ ZYLO AI</span><button class="ib" id="close" title="Collapse sidebar">«</button></div>
+  <button class="new" id="new">+ New chat</button>
+  <input class="sq" id="sq" type="search" placeholder="Search conversations" aria-label="Search conversations">
+  <div class="list" id="list"></div>
+  <div class="foot"><span style="flex:1">Guest · this device only</span><button class="ib" id="set">Settings</button></div>
+</aside>
+<div class="sc" id="sc"></div>
+<main class="main">
+  <div class="top"><button class="ib menu" id="menu" aria-label="Open sidebar">☰</button><button class="ib" id="open" title="Show sidebar" hidden>»</button><b id="ttl">ZYLO AI</b><span class="sp"></span><span class="banner" id="bn"></span></div>
+  <div class="chat" id="chat"><div class="wrap" id="msgs"></div></div>
+  <div class="comp">
+    <div class="box" id="box">
+      <div class="chips" id="chips"></div>
+      <textarea id="in" rows="1" placeholder="Message ZYLO AI…" aria-label="Message"></textarea>
+      <div class="bar"><button class="ib" id="att" title="Attach files">＋</button><input type="file" id="file" multiple hidden>
+        <select id="model" aria-label="Model"></select><span class="sp"></span><button class="send" id="go" aria-label="Send">↑</button></div>
+    </div>
+    <div class="hint">Enter to send · Shift+Enter for a new line · Drop or paste files to attach</div>
+  </div>
+</main>
+<dialog id="dlg"><h3>Settings</h3><label>Appearance</label><select id="th"><option value="system">System</option><option value="dark">Dark</option><option value="light">Light</option></select>
+<label>Default model</label><select id="dm"></select><div style="text-align:right;margin-top:18px"><button class="new" style="margin:0;padding:9px 18px" id="ok">Done</button></div></dialog>
+
+<script>
+/* ===== PROVIDER CONFIG =====
+   The browser never holds API keys. Point `endpoint` at YOUR server route, which holds the keys and calls
+   OpenAI / Anthropic / Gemini / OpenRouter / a local model. Leave empty = "not connected" (no fake replies).
+   Request : POST {conversationId, model, messages:[{role:'user'|'assistant', content}]}
+   Response: streamed plain text (chunks appended as they arrive). Non-2xx = error. */
+var ZYLO={endpoint:'',models:[
+ ['fast','ZYLO FAST','Fast everyday assistant'],['smart','ZYLO SMART','More capable reasoning'],['pro','ZYLO PRO','Advanced reasoning and coding'],
+ ['vision','ZYLO VISION','Image understanding'],['code','ZYLO CODE','Programming-focused']]};
+var $=function(i){return document.getElementById(i)};
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var convs=load('zai.c',[]),S=load('zai.s',{theme:'system',model:'fast'}),cur=null,files=[],ctl=null,busy=false;
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function md(t){ /* escape first, then format: safe against XSS */
+  var out=[],parts=String(t).split(/```/);
+  parts.forEach(function(p,i){
+    if(i%2){var nl=p.indexOf('\n'),lang=nl>-1?p.slice(0,nl).trim():'',code=nl>-1?p.slice(nl+1):p;
+      out.push('<div class="cb"><div class="h"><span>'+esc(lang||'code')+'</span><button data-cp>Copy</button></div><pre>'+esc(code.replace(/\n$/,''))+'</pre></div>')}
+    else out.push(esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').split(/\n{2,}/).map(function(x){return x.trim()?'<p>'+x.replace(/\n/g,'<br>')+'</p>':''}).join(''))});
+  return out.join('')}
+function getC(){return convs.find(function(c){return c.id===cur})}
+function saveC(){save('zai.c',convs)}
+function theme(){document.documentElement.dataset.theme=S.theme}
+function banner(){var b=$('bn'),on=!!ZYLO.endpoint;b.className='banner'+(on?' ok':'');b.innerHTML=on?'<b>●</b> Backend connected':'<b>●</b> No AI backend connected'}
+
+function renderList(){
+  var q=$('sq').value.toLowerCase(),l=convs.filter(function(c){return c.title.toLowerCase().indexOf(q)>-1}).sort(function(a,b){return (b.pin|0)-(a.pin|0)||b.updated-a.updated});
+  $('list').innerHTML=l.length?l.map(function(c){return '<div class="ci'+(c.id===cur?' on':'')+'" data-id="'+c.id+'"><button class="t" data-o>'+(c.pin?'📌 ':'')+esc(c.title)+'</button><button class="ib" data-pin title="Pin">📌</button><button class="ib" data-ren title="Rename">✎</button><button class="ib" data-del title="Delete">🗑</button></div>'}).join(''):'<p style="color:var(--dim);text-align:center;font-size:.85rem;padding:16px">'+(convs.length?'No matches':'No conversations yet')+'</p>'}
+function renderMsgs(){
+  var c=getC(),el=$('msgs');$('ttl').textContent=c?c.title:'ZYLO AI';
+  if(!c||!c.msgs.length){el.innerHTML='<div class="welcome"><h1>Meet <span>ZYLO AI</span></h1><p>Think, create, research and code in one workspace.</p><div class="sg">'+
+    [['Explain something','Break down a hard idea simply'],['Debug my code','Paste an error and get a fix'],['Plan a project','Turn a goal into clear steps'],['Summarize a document','Attach a file and ask for key points']].map(function(s){return '<button data-sg="'+esc(s[0]+': ')+'">'+s[0]+'<small>'+s[1]+'</small></button>'}).join('')+'</div></div>';return}
+  el.innerHTML=c.msgs.map(function(m,i){
+    if(m.err)return '<div class="m a"><div class="err">'+esc(m.err)+'<button data-retry>Retry</button></div></div>';
+    var last=i===c.msgs.length-1;
+    return '<div class="m '+(m.role==='user'?'u':'a')+'" data-i="'+i+'"><div class="b">'+(m.content?md(m.content):'<span class="dots"><span></span><span></span><span></span></span>')+'</div><div class="acts" style="'+(m.role==='user'?'justify-content:flex-end':'')+'">'+
+    '<button class="ib" data-copy>Copy</button>'+(m.role==='user'?'<button class="ib" data-edit>Edit</button>':(last?'<button class="ib" data-regen>Regenerate</button>':'')+'<button class="ib'+(m.fb==='up'?' on':'')+'" data-fb="up">👍</button><button class="ib" data-fb="down">👎</button>')+'</div></div>'}).join('');
+  $('chat').scrollTop=$('chat').scrollHeight}
+function newChat(){cur=null;files=[];renderChips();renderList();renderMsgs();$('in').focus();closeSide()}
+function ensure(){if(!getC()){var c={id:uid(),title:'New chat',model:S.model,created:Date.now(),updated:Date.now(),msgs:[]};convs.unshift(c);cur=c.id}return getC()}
+
+function renderChips(){$('chips').innerHTML=files.map(function(f,i){return '<span class="chip">📎 '+esc(f.name)+' · '+(f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.ceil(f.size/1024)+' KB')+'<button data-rm="'+i+'" aria-label="Remove">✕</button></span>'}).join('')}
+function addFiles(list){[].slice.call(list).forEach(function(f){if(f.size>20*1048576){alert('Unable to attach '+f.name+' (over 20 MB).');return}files.push(f)});renderChips()}
+
+function send(retry){
+  if(busy)return;var c=getC(),txt=$('in').value.trim();
+  if(!retry){if(!txt&&!files.length)return;c=ensure();
+    var note=files.length?'\n\n[Attached: '+files.map(function(f){return f.name}).join(', ')+' — file contents are not sent until file processing is connected]':'';
+    c.msgs.push({role:'user',content:txt+note});if(c.title==='New chat')c.title=(txt||files[0].name).slice(0,42);
+    $('in').value='';files=[];renderChips();grow()}
+  c.model=$('model').value;c.msgs=c.msgs.filter(function(m){return !m.err});
+  c.msgs.push({role:'assistant',content:''});c.updated=Date.now();renderList();renderMsgs();run(c)}
+function run(c){
+  busy=true;ctl=new AbortController();setBtn();var a=c.msgs[c.msgs.length-1];
+  var fail=function(msg){c.msgs=c.msgs.filter(function(m){return m!==a||m.content});if(!a.content)c.msgs.push({err:msg});end(c)};
+  if(!ZYLO.endpoint)return fail('ZYLO AI is not connected to a model yet. Add your server endpoint in ZYLO.endpoint to enable replies.');
+  fetch(ZYLO.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,
+    body:JSON.stringify({conversationId:c.id,model:c.model,messages:c.msgs.filter(function(m){return m!==a&&!m.err}).map(function(m){return{role:m.role,content:m.content}})})})
+  .then(function(r){
+    if(r.status===429)throw new Error("You've reached your current usage limit.");
+    if(!r.ok||!r.body)throw new Error('ZYLO AI is temporarily unavailable. Please try again.');
+    var rd=r.body.getReader(),dec=new TextDecoder();
+    (function pump(){return rd.read().then(function(x){if(x.done)return end(c);a.content+=dec.decode(x.value,{stream:true});renderMsgs();return pump()})})().catch(function(e){throw e})})
+  .catch(function(e){if(e.name==='AbortError')return end(c);fail(e instanceof TypeError?'Connection lost. Check your internet connection and try again.':e.message)})}
+function end(c){busy=false;ctl=null;setBtn();c.updated=Date.now();saveC();renderList();renderMsgs()}
+function setBtn(){var b=$('go');b.textContent=busy?'■':'↑';b.className='send'+(busy?' stop':'');b.setAttribute('aria-label',busy?'Stop generating':'Send')}
+function grow(){var t=$('in');t.style.height='auto';t.style.height=Math.min(t.scrollHeight,200)+'px'}
+function openSide(){$('side').classList.add('open');$('sc').classList.add('on')}function closeSide(){$('side').classList.remove('open');$('sc').classList.remove('on')}
+
+$('go').onclick=function(){busy?ctl&&ctl.abort():send()};
+$('in').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+$('in').addEventListener('input',grow);
+$('in').addEventListener('paste',function(e){var f=[].slice.call(e.clipboardData.files||[]);if(f.length){e.preventDefault();addFiles(f)}});
+$('att').onclick=function(){$('file').click()};$('file').onchange=function(){addFiles(this.files);this.value=''};
+['dragover','drop'].forEach(function(ev){document.addEventListener(ev,function(e){if(!e.dataTransfer||![].slice.call(e.dataTransfer.types).includes('Files'))return;e.preventDefault();if(ev==='drop')addFiles(e.dataTransfer.files)})});
+$('chips').onclick=function(e){var r=e.target.closest('[data-rm]');if(r){files.splice(+r.dataset.rm,1);renderChips()}};
+$('new').onclick=newChat;$('sq').oninput=renderList;$('menu').onclick=openSide;$('sc').onclick=closeSide;
+$('close').onclick=function(){$('side').style.display='none';$('open').hidden=false};$('open').onclick=function(){$('side').style.display='';$('open').hidden=true};
+$('list').onclick=function(e){var row=e.target.closest('.ci');if(!row)return;var c=convs.find(function(x){return x.id===row.dataset.id});
+  if(e.target.closest('[data-del]')){if(confirm('Delete this conversation?')){convs=convs.filter(function(x){return x!==c});if(cur===c.id)cur=null;saveC()}}
+  else if(e.target.closest('[data-pin]')){c.pin=!c.pin;saveC()}
+  else if(e.target.closest('[data-ren]')){var n=prompt('Rename conversation',c.title);if(n&&n.trim()){c.title=n.trim().slice(0,60);saveC()}}
+  else{cur=c.id;$('model').value=c.model||S.model;closeSide()}
+  renderList();renderMsgs()};
+$('msgs').onclick=function(e){var c=getC(),t=e.target,m=t.closest('.m'),i=m?+m.dataset.i:-1;
+  if(t.closest('[data-sg]')){$('in').value=t.closest('[data-sg]').dataset.sg;$('in').focus();grow();return}
+  if(t.closest('[data-retry]'))return send(true);
+  if(t.closest('[data-cp]')){var pre=t.closest('.cb').querySelector('pre');navigator.clipboard.writeText(pre.textContent);t.textContent='Copied';setTimeout(function(){t.textContent='Copy'},1200);return}
+  if(!c||i<0)return;
+  if(t.closest('[data-copy]')){navigator.clipboard.writeText(c.msgs[i].content);t.textContent='Copied';setTimeout(function(){t.textContent='Copy'},1200)}
+  else if(t.closest('[data-edit]')){$('in').value=c.msgs[i].content.replace(/\n\n\[Attached:[\s\S]*$/,'');c.msgs=c.msgs.slice(0,i);saveC();renderMsgs();$('in').focus();grow()}
+  else if(t.closest('[data-regen]')){c.msgs.pop();send(true)}
+  else if(t.closest('[data-fb]')){c.msgs[i].fb=t.closest('[data-fb]').dataset.fb;saveC();renderMsgs()}};
+/* settings */
+$('set').onclick=function(){$('th').value=S.theme;$('dm').value=S.model;$('dlg').showModal()};
+$('ok').onclick=function(){S.theme=$('th').value;S.model=$('dm').value;save('zai.s',S);theme();$('model').value=S.model;$('dlg').close()};
+var opts=ZYLO.models.map(function(m){return '<option value="'+m[0]+'">'+m[1]+' — '+m[2]+'</option>'}).join('');$('model').innerHTML=opts;$('dm').innerHTML=opts;$('model').value=S.model;
+theme();banner();renderList();renderMsgs();
+</script>
+</body>
+</html>
