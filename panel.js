@@ -122,5 +122,6 @@
     root.addEventListener('change',function(e){var id=e.target.dataset.id;if(!id)return;sel[id]=e.target.checked?1:0;ss(TK,sel);var pv=root.querySelector('#pv');if(pv)pv.textContent=build(true)});
     render();
   }
+  window.zyloCore={T:T,build:build,dl:dl,save:function(){ss(TK,sel)},user:function(){return user},get sel(){return sel},set sel(v){sel=v}};
   if(location.hash.indexOf('access_token=')>-1)finishLogin();else start();
 })();
