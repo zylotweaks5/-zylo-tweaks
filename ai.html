@@ -38,7 +38,7 @@ button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
 .m{margin-bottom:22px;animation:in .2s ease}@keyframes in{from{opacity:0;transform:translateY(6px)}}
 .m.u .b{background:var(--card2);border-radius:18px 18px 4px 18px;margin-left:auto;max-width:85%;width:fit-content}
 .b{padding:12px 16px;line-height:1.6;overflow-wrap:anywhere}.m.a .b{padding-left:0}
-.b p{margin:0 0 10px}.b code{background:var(--card2);border-radius:5px;padding:1px 6px;font-size:.9em}
+.b p{margin:0 0 10px}.b h2,.b h3,.b h4,.b h5{margin:16px 0 8px;line-height:1.3}.b h2{font-size:1.35rem}.b h3{font-size:1.15rem}.b h4,.b h5{font-size:1rem}.b ul,.b ol{margin:0 0 10px;padding-left:22px}.b li{margin-bottom:4px}.b blockquote{margin:0 0 10px;padding:4px 14px;border-left:3px solid var(--acc);color:var(--dim)}.b a{color:var(--acc)}.b hr{border:0;border-top:1px solid var(--line);margin:14px 0}.b code{background:var(--card2);border-radius:5px;padding:1px 6px;font-size:.9em}
 .cb{background:#0a0812;border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden}
 :root[data-theme="light"] .cb{background:#1c1330;color:#f1edf8}
 .cb .h{display:flex;justify-content:space-between;padding:6px 12px;font-size:.75rem;color:#a094b8;border-bottom:1px solid var(--line)}
@@ -57,7 +57,7 @@ button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
 .send{background:var(--acc2);border:0;color:#fff;border-radius:50%;width:38px;height:38px;font-weight:700}.send:hover{background:var(--acc)}.send.stop{background:var(--err)}
 .hint{text-align:center;color:var(--dim);font-size:.72rem;margin-top:8px}
 dialog{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(400px,92vw)}dialog::backdrop{background:#000a}
-dialog h3{margin:0 0 14px}dialog label{display:block;margin:12px 0 4px;color:var(--dim);font-size:.85rem}dialog select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px}
+dialog h3{margin:0 0 14px}dialog label{display:block;margin:12px 0 4px;color:var(--dim);font-size:.85rem}dialog input{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px}dialog select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px}
 .sc{display:none}
 @media(max-width:800px){.side{position:fixed;inset:0 auto 0 0;z-index:30;transform:translateX(-100%);width:min(300px,86vw);padding-top:env(safe-area-inset-top,0px)}.side.open{transform:none}
 .sc.on{display:block;position:fixed;inset:0;background:#0008;z-index:20}.top .menu{display:block}.sg{grid-template-columns:1fr}.ci .ib{opacity:1}}
@@ -87,7 +87,7 @@ dialog h3{margin:0 0 14px}dialog label{display:block;margin:12px 0 4px;color:var
   </div>
 </main>
 <dialog id="dlg"><h3>Settings</h3><label>Appearance</label><select id="th"><option value="system">System</option><option value="dark">Dark</option><option value="light">Light</option></select>
-<label>Default model</label><select id="dm"></select><div style="text-align:right;margin-top:18px"><button class="new" style="margin:0;padding:9px 18px" id="ok">Done</button></div></dialog>
+<label>Default model</label><select id="dm"></select><label>Backend URL (your server)</label><input id="ep" type="url" placeholder="https://zylo-ai.yourname.workers.dev"><div style="text-align:right;margin-top:18px"><button class="new" style="margin:0;padding:9px 18px" id="ok">Done</button></div></dialog>
 
 <script>
 /* ===== PROVIDER CONFIG =====
@@ -102,14 +102,25 @@ var $=function(i){return document.getElementById(i)};
 function load(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var convs=load('zai.c',[]),S=load('zai.s',{theme:'system',model:'fast'}),cur=null,files=[],ctl=null,busy=false;
+ZYLO.endpoint=S.endpoint||ZYLO.endpoint;
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function md(t){ /* escape first, then format: safe against XSS */
-  var out=[],parts=String(t).split(/```/);
-  parts.forEach(function(p,i){
+function inl(s){return esc(s).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<i>$2</i>').replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')}
+function blocks(t){var L=t.split('\n'),o=[],i=0,m,UL=/^\s*[-*•]\s+/,OL=/^\s*\d+[.)]\s+/;
+  while(i<L.length){var l=L[i];
+    if(!l.trim()){i++;continue}
+    if(m=l.match(/^(#{1,4})\s+(.*)/)){var n=m[1].length+1;o.push('<h'+n+'>'+inl(m[2])+'</h'+n+'>');i++}
+    else if(UL.test(l)){var a=[];while(i<L.length&&UL.test(L[i])){a.push('<li>'+inl(L[i].replace(UL,''))+'</li>');i++}o.push('<ul>'+a.join('')+'</ul>')}
+    else if(OL.test(l)){var b=[];while(i<L.length&&OL.test(L[i])){b.push('<li>'+inl(L[i].replace(OL,''))+'</li>');i++}o.push('<ol>'+b.join('')+'</ol>')}
+    else if(/^>/.test(l)){var q=[];while(i<L.length&&/^>/.test(L[i])){q.push(inl(L[i].replace(/^>\s?/,'')));i++}o.push('<blockquote>'+q.join('<br>')+'</blockquote>')}
+    else if(/^-{3,}$/.test(l.trim())){o.push('<hr>');i++}
+    else{var p=[inl(l)];i++;while(i<L.length&&L[i].trim()&&!/^(#{1,4}\s|\s*[-*•]\s|\s*\d+[.)]\s|>)/.test(L[i])){p.push(inl(L[i]));i++}o.push('<p>'+p.join('<br>')+'</p>')}
+  }return o.join('')}
+function md(t){
+  var out=[];String(t).split(/```/).forEach(function(p,i){
     if(i%2){var nl=p.indexOf('\n'),lang=nl>-1?p.slice(0,nl).trim():'',code=nl>-1?p.slice(nl+1):p;
       out.push('<div class="cb"><div class="h"><span>'+esc(lang||'code')+'</span><button data-cp>Copy</button></div><pre>'+esc(code.replace(/\n$/,''))+'</pre></div>')}
-    else out.push(esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').split(/\n{2,}/).map(function(x){return x.trim()?'<p>'+x.replace(/\n/g,'<br>')+'</p>':''}).join(''))});
+    else out.push(blocks(p))});
   return out.join('')}
 function getC(){return convs.find(function(c){return c.id===cur})}
 function saveC(){save('zai.c',convs)}
@@ -185,8 +196,8 @@ $('msgs').onclick=function(e){var c=getC(),t=e.target,m=t.closest('.m'),i=m?+m.d
   else if(t.closest('[data-regen]')){c.msgs.pop();send(true)}
   else if(t.closest('[data-fb]')){c.msgs[i].fb=t.closest('[data-fb]').dataset.fb;saveC();renderMsgs()}};
 /* settings */
-$('set').onclick=function(){$('th').value=S.theme;$('dm').value=S.model;$('dlg').showModal()};
-$('ok').onclick=function(){S.theme=$('th').value;S.model=$('dm').value;save('zai.s',S);theme();$('model').value=S.model;$('dlg').close()};
+$('set').onclick=function(){$('th').value=S.theme;$('dm').value=S.model;$('ep').value=S.endpoint||ZYLO.endpoint;$('dlg').showModal()};
+$('ok').onclick=function(){S.theme=$('th').value;S.model=$('dm').value;var u=$('ep').value.trim();S.endpoint=/^https:\/\//.test(u)?u.replace(/\/$/,''):'';ZYLO.endpoint=S.endpoint;save('zai.s',S);banner();theme();$('model').value=S.model;$('dlg').close()};
 var opts=ZYLO.models.map(function(m){return '<option value="'+m[0]+'">'+m[1]+' — '+m[2]+'</option>'}).join('');$('model').innerHTML=opts;$('dm').innerHTML=opts;$('model').value=S.model;
 theme();banner();renderList();renderMsgs();
 </script>

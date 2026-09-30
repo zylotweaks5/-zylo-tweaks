@@ -1,0 +1,11 @@
+ZYLO AI backend setup (Cloudflare Workers, free tier works)
+1. Get an API key from your AI provider (Anthropic, OpenAI or OpenRouter). This costs money per message.
+2. Cloudflare dashboard -> Workers & Pages -> Create -> Worker -> paste worker.js -> Deploy.
+3. Worker -> Settings -> Variables and Secrets:
+   API_KEY        (Secret)  your provider key
+   PROVIDER       anthropic   (or openai / openrouter)
+   ALLOWED_ORIGIN https://zylotweaks5.github.io
+   For openai/openrouter also set MODEL_FAST, MODEL_SMART, MODEL_PRO, MODEL_VISION, MODEL_CODE to real model IDs.
+4. Copy the Worker URL (https://something.workers.dev).
+5. Open ai.html -> Settings -> paste it into "Backend URL" -> Done. The banner turns green.
+Set a spending limit in your provider dashboard so a bug or abuse can't run up a bill.
