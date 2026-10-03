@@ -63,6 +63,8 @@ $T=@{
  dpi=@{a={$p=NeedFN;Layers $p 'HIGHDPIAWARE' $true};r={$p=NeedFN;Layers $p 'HIGHDPIAWARE' $false}}
  dns=@{a={ipconfig /flushdns|Out-Null;if($LASTEXITCODE){throw 'ipconfig failed'}};r={}}
  tmp=@{a={Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue};r={}}
+ fdns=@{a={foreach($ad in @(Get-NetAdapter -Physical|Where-Object Status -eq 'Up')){Set-DnsClientServerAddress -InterfaceIndex $ad.ifIndex -ServerAddresses '1.1.1.1','1.0.0.1'}};r={foreach($ad in @(Get-NetAdapter -Physical|Where-Object Status -eq 'Up')){Set-DnsClientServerAddress -InterfaceIndex $ad.ifIndex -ResetServerAddresses}}}
+ qos=@{a={Remove-NetQosPolicy -Name 'ZYLO Fortnite' -Confirm:$false -ErrorAction SilentlyContinue;New-NetQosPolicy -Name 'ZYLO Fortnite' -AppPathNameMatchCondition 'FortniteClient-Win64-Shipping.exe' -DSCPAction 46|Out-Null};r={Remove-NetQosPolicy -Name 'ZYLO Fortnite' -Confirm:$false -ErrorAction SilentlyContinue}}
  gfx=@{a={foreach($k in 'sg.ViewDistanceQuality','sg.ShadowQuality','sg.AntiAliasingQuality','sg.TextureQuality','sg.EffectsQuality','sg.PostProcessQuality','sg.FoliageQuality'){IniSet 'ScalabilityGroups' $k 0}};r={IniRestore}}
  fps=@{a={IniSet $FS 'FrameRateLimit' '0.000000'};r={IniRestore}}
 }

@@ -43,6 +43,8 @@
    {id:'fso',n:'Disable fullscreen optimizations',d:'Can reduce input lag on some setups.',fn:1,flag:'DISABLEDXMAXIMIZEDWINDOWEDMODE'},
    {id:'dpi',n:'High DPI awareness',d:'Stops Windows scaling the Fortnite window.',fn:1,flag:'HIGHDPIAWARE'},
    {id:'dns',n:'Flush DNS cache',d:'One-time action. Clears stale network lookups.',a:['ipconfig /flushdns >nul'],r:[]},
+   {id:'fdns',n:'Faster DNS (Cloudflare)',d:'Uses 1.1.1.1 for lookups. Restore sets your DNS back to automatic.',only:1,a:['powershell -NoProfile -Command "Get-NetAdapter -Physical | Where-Object Status -eq \'Up\' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses \'1.1.1.1\',\'1.0.0.1\' }" >nul'],r:['powershell -NoProfile -Command "Get-NetAdapter -Physical | Where-Object Status -eq \'Up\' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses }" >nul']},
+   {id:'qos',n:'Fortnite network priority tag',d:'Tags Fortnite traffic as high priority. Only helps if your router honors it.',only:1,a:['powershell -NoProfile -Command "Remove-NetQosPolicy -Name \'ZYLO Fortnite\' -Confirm:$false -ErrorAction SilentlyContinue; New-NetQosPolicy -Name \'ZYLO Fortnite\' -AppPathNameMatchCondition \'FortniteClient-Win64-Shipping.exe\' -DSCPAction 46 -ErrorAction Stop | Out-Null" >nul'],r:['powershell -NoProfile -Command "Remove-NetQosPolicy -Name \'ZYLO Fortnite\' -Confirm:$false -ErrorAction SilentlyContinue" >nul']},
    {id:'tmp',n:'Clear temp files',d:'One-time action. Deletes your temp folder contents.',a:['del /q /f "%TEMP%\\*" >nul 2>&1'],r:[]}
   ];
   var sel=ls(TK)||{gm:1,dvr:1,pw:1};
@@ -69,7 +71,7 @@
       if(N)L.push('echo.','if %TF%==0 (echo All '+N+' tweaks applied. Restart Fortnite.) else (echo Some tweaks had problems - see above. Use the Restore script to undo.)');
     }else{
       L.push('echo Restoring defaults...');
-      T.forEach(function(t){(t.r||[]).forEach(function(c){L.push(c)})});
+      T.forEach(function(t){if(t.only&&!sel[t.id])return;(t.r||[]).forEach(function(c){L.push(c)})});
       L.push('reg delete "'+GP+'" /v "%FN%" /f >nul 2>&1','reg delete "'+LY+'" /v "%FN%" /f >nul 2>&1','echo.','echo Restored. Your backups are still in %B%');
     }
     L.push('pause');return L.join('\n');
